@@ -2,489 +2,420 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Her Little World ♡</title>
-
 <style>
-* { box-sizing: border-box; }
-
-body {
-  margin: 0;
-  overflow: hidden;
-  background: #f8edf2;
-  color: #71566c;
-  font-family: Georgia, serif;
+*{box-sizing:border-box}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;font-family:Georgia,serif;background:#f8eaf0;color:#604d5b}
+#scene{position:fixed;inset:0}
+canvas{display:block;width:100%;height:100%;touch-action:none}
+#top{
+position:fixed;top:14px;left:50%;transform:translateX(-50%);
+text-align:center;width:90%;pointer-events:none;text-shadow:0 1px 5px white
 }
-
-canvas {
-  display: block;
-  width: 100%;
-  height: 100%;
-  touch-action: none;
+#top h1{font-size:clamp(20px,4vw,30px);margin:0;color:#76536b}
+#top p{font:12px Arial;margin:5px 0;color:#8d7185}
+#message{
+display:none;position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);
+width:min(340px,86vw);padding:24px 22px;background:#fff8fc;
+border:2px solid #edcddd;border-radius:22px;text-align:center;
+box-shadow:0 12px 45px #77546b40;z-index:5
 }
-
-header {
-  position: absolute;
-  z-index: 2;
-  top: 15px;
-  left: 0;
-  width: 100%;
-  text-align: center;
-  pointer-events: none;
+#message h2{font-size:21px;margin:0 0 10px;color:#986c88}
+#message p{font:14px/1.6 Arial,sans-serif;margin:0 0 16px}
+button{
+border:0;border-radius:22px;padding:10px 20px;
+background:#dcaec8;color:#fff;font-weight:bold;cursor:pointer
 }
-
-h1 {
-  margin: 0;
-  font-size: clamp(22px, 4vw, 34px);
-  text-shadow: 0 2px white;
+#hint{
+position:fixed;bottom:14px;left:50%;transform:translateX(-50%);
+background:#fff9fccc;padding:9px 15px;border-radius:20px;
+font:11px Arial;color:#856d7e;white-space:nowrap;pointer-events:none
 }
-
-header p {
-  margin: 5px;
-  font: 12px Arial;
+#loading{position:fixed;inset:0;display:grid;place-items:center;background:#f8eaf0;z-index:10;color:#8e6a83}
+#loading span{font-size:16px}
+#home{
+position:fixed;right:12px;top:14px;background:#fff9f0;color:#916c83;
+border:1px solid #e9cbdc;padding:9px 13px;font-size:12px
 }
-
-#home, #hint {
-  position: absolute;
-  z-index: 3;
-}
-
-#home {
-  top: 15px;
-  right: 14px;
-  border: 0;
-  border-radius: 20px;
-  background: #fffafd;
-  color: #71566c;
-  padding: 10px 15px;
-}
-
-#hint {
-  bottom: 12px;
-  width: 100%;
-  text-align: center;
-  font: 11px Arial;
-  color: #927d8c;
-  pointer-events: none;
-}
-
-#message {
-  display: none;
-  position: absolute;
-  z-index: 5;
-  left: 50%;
-  bottom: 45px;
-  transform: translateX(-50%);
-  width: min(88%, 370px);
-  padding: 20px;
-  text-align: center;
-  border-radius: 20px;
-  background: #fffafd;
-  box-shadow: 0 8px 35px #65445b33;
-  border: 1px solid #ead8e3;
-}
-
-#message strong {
-  display: block;
-  margin-bottom: 9px;
-  font-size: 19px;
-}
-
-#message p {
-  margin: 0;
-  line-height: 1.5;
-  font-size: 14px;
-}
-
-#message button {
-  border: 0;
-  border-radius: 20px;
-  padding: 9px 20px;
-  margin-top: 15px;
-  background: #ead8e9;
-  color: #71566c;
+@media(max-width:600px){
+#top{top:12px}
+#top p{font-size:10px}
+#hint{font-size:10px;bottom:10px}
 }
 </style>
-
-<script type="importmap">
-{
-  "imports": {
-    "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
-    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
-  }
-}
-</script>
 </head>
-
 <body>
-
-<header>
-  <h1>Her Little World ♡</h1>
-  <p>A tiny house filled with little pieces of her</p>
-</header>
-
-<button id="home">⌂ Full house</button>
-
+<div id="scene"></div>
+<div id="loading"><span>Building her little world... ♡</span></div>
+<div id="top">
+<h1>Her Little World ♡</h1>
+<p>A tiny universe made just for you</p>
+</div>
+<button id="home">⌂ View whole house</button>
 <div id="message">
-  <strong id="msgTitle"></strong>
-  <p id="msgText"></p>
-  <button id="close">Close ♡</button>
+<h2 id="msgTitle">A little surprise ♡</h2>
+<p id="msgText"></p>
+<button id="close">Close ♡</button>
 </div>
-
-<div id="hint">
-  Drag to explore · Pinch or scroll to zoom · Tap objects for surprises
-</div>
+<div id="hint">Drag to look around · Pinch to zoom · Tap objects for surprises</div>
 
 <script type="module">
-import * as THREE from 'three';
-import { OrbitControls } from
-'https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/controls/OrbitControls.js';
+import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js';
+import {OrbitControls} from 'https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/controls/OrbitControls.js';
 
 const scene = new THREE.Scene();
-scene.background = new THREE.Color('#f8edf2');
+scene.background = new THREE.Color('#f8eaf0');
+scene.fog = new THREE.Fog('#f8eaf0',35,75);
 
-const camera = new THREE.PerspectiveCamera(
-  35, innerWidth / innerHeight, 0.1, 100
-);
+const camera = new THREE.PerspectiveCamera(36,innerWidth/innerHeight,.1,150);
+camera.position.set(23,24,29);
 
-camera.position.set(12, 14, 17);
+const renderer = new THREE.WebGLRenderer({antialias:true});
+renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+renderer.setSize(innerWidth,innerHeight);
+renderer.shadowMap.enabled=true;
+renderer.shadowMap.type=THREE.PCFSoftShadowMap;
+renderer.outputColorSpace=THREE.SRGBColorSpace;
+renderer.toneMapping=THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure=1.25;
+document.getElementById('scene').appendChild(renderer.domElement);
 
-const renderer = new THREE.WebGLRenderer({
-  antialias: true,
-  powerPreference: 'high-performance'
+const controls=new OrbitControls(camera,renderer.domElement);
+controls.enableDamping=true;
+controls.dampingFactor=.06;
+controls.target.set(0,1,1);
+controls.minDistance=12;
+controls.maxDistance=58;
+controls.maxPolarAngle=Math.PI/2.05;
+controls.minPolarAngle=.25;
+
+scene.add(new THREE.HemisphereLight('#fff5fa','#a68b9d',2.0));
+const sun=new THREE.DirectionalLight('#fff3df',3.0);
+sun.position.set(-12,24,14);
+sun.castShadow=true;
+sun.shadow.mapSize.set(2048,2048);
+sun.shadow.camera.left=-25;sun.shadow.camera.right=25;
+sun.shadow.camera.top=25;sun.shadow.camera.bottom=-25;
+scene.add(sun);
+
+const mat=(color,roughness=.85)=>new THREE.MeshStandardMaterial({color,roughness});
+const M={
+wall:mat('#fff4e9'),pink:mat('#e9c5d4'),pink2:mat('#dbaec4'),
+floor:mat('#d9bba6'),wood:mat('#b98770'),wood2:mat('#d2a58d'),
+cream:mat('#fff0d9'),white:mat('#fffaf3'),lilac:mat('#c9b9df'),
+purple:mat('#9b83b7'),blue:mat('#b6d1dc'),mint:mat('#b7d4c1'),
+green:mat('#799d7d'),yellow:mat('#f2d58e'),red:mat('#d98d91'),
+dark:mat('#554b5c'),black:mat('#39333f'),grey:mat('#b7afb6'),
+carpet:mat('#e8c8d7'),carpet2:mat('#c9badb')
+};
+
+const clickable=[];
+const cats=[];
+const clock=new THREE.Clock();
+
+function box(parent,x,y,z,w,h,d,material,info=null,rot=0){
+ const mesh=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),material);
+ mesh.position.set(x,y,z);mesh.rotation.y=rot;
+ mesh.castShadow=true;mesh.receiveShadow=true;parent.add(mesh);
+ if(info){mesh.userData.info=info;clickable.push(mesh);}
+ return mesh;
+}
+function sphere(parent,x,y,z,r,material,info=null){
+ const mesh=new THREE.Mesh(new THREE.SphereGeometry(r,18,14),material);
+ mesh.position.set(x,y,z);mesh.castShadow=true;parent.add(mesh);
+ if(info){mesh.userData.info=info;clickable.push(mesh);}
+ return mesh;
+}
+function cyl(parent,x,y,z,r1,r2,h,material,info=null){
+ const mesh=new THREE.Mesh(new THREE.CylinderGeometry(r1,r2,h,20),material);
+ mesh.position.set(x,y,z);mesh.castShadow=true;parent.add(mesh);
+ if(info){mesh.userData.info=info;clickable.push(mesh);}
+ return mesh;
+}
+function group(parent,x=0,y=0,z=0){
+ const g=new THREE.Group();g.position.set(x,y,z);parent.add(g);return g;
+}
+function carpet(x,z,w,d,material=M.carpet){
+ box(scene,x,.045,z,w,.08,d,material);
+}
+function wall(x,y,z,w,h,d,material=M.wall){
+ box(scene,x,y,z,w,h,d,material);
+}
+function label(text,x,y,z,color='#76556d'){
+ const canvas=document.createElement('canvas');
+ canvas.width=512;canvas.height=128;
+ const ctx=canvas.getContext('2d');
+ ctx.fillStyle='rgba(255,248,252,.94)';
+ ctx.beginPath();ctx.roundRect(8,8,496,112,30);ctx.fill();
+ ctx.strokeStyle='#e7c4d7';ctx.lineWidth=5;ctx.stroke();
+ ctx.fillStyle=color;ctx.font='bold 38px Georgia';ctx.textAlign='center';
+ ctx.fillText(text,256,79);
+ const texture=new THREE.CanvasTexture(canvas);
+ const sprite=new THREE.Sprite(new THREE.SpriteMaterial({map:texture,transparent:true}));
+ sprite.position.set(x,y,z);sprite.scale.set(4.5,1.12,1);scene.add(sprite);
+}
+
+// Ground and house foundation
+box(scene,0,-.38,1,22,.55,15,mat('#e7cbd5'));
+box(scene,0,-.08,1,20,.18,13,M.cream);
+
+// Four roomy spaces
+const rooms=[
+ {name:'COMFORT ZONE',x:-5,z:-2.5,color:'#eacbd7'},
+ {name:'SOUND LAB',x:5,z:-2.5,color:'#d5c8e9'},
+ {name:'CAT HQ',x:-5,z:4.5,color:'#c9dfd0'},
+ {name:'CHAOS DEN',x:5,z:4.5,color:'#f0d9b5'}
+];
+rooms.forEach(r=>{
+ carpet(r.x,r.z,9.6,6.1,mat(r.color));
 });
 
-renderer.setSize(innerWidth, innerHeight);
-renderer.setPixelRatio(Math.min(devicePixelRatio, 1.7));
-renderer.shadowMap.enabled = true;
-renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-renderer.outputColorSpace = THREE.SRGBColorSpace;
-renderer.toneMapping = THREE.ACESFilmicToneMapping;
-renderer.toneMappingExposure = 1.15;
+// Outer walls, with open front for dollhouse cutaway
+wall(-10,1.55,-2.5,.25,3.1,7.2);
+wall(10,1.55,-2.5,.25,3.1,7.2);
+wall(0,1.55,-6.1,20,.25,.25);
+wall(-5,1.55,7.5,10,.25,.25);
+wall(5,1.55,7.5,10,.25,.25);
+wall(-10,1.55,4.5,.25,3.1,6);
+wall(10,1.55,4.5,.25,3.1,6);
 
-document.body.insertBefore(
-  renderer.domElement,
-  document.querySelector('header')
-);
+// Internal dividers with generous doorway gaps
+wall(-5,1.55,1.15,9.8,.22,.22);
+wall(5,1.55,1.15,9.8,.22,.22);
+wall(0,1.55,-3.9,.22,3.1,4.3);
+wall(0,1.55,5.25,.22,3.1,4.5);
 
-const controls = new OrbitControls(camera, renderer.domElement);
-controls.target.set(0, 0, 1);
-controls.enableDamping = true;
-controls.dampingFactor = 0.06;
-controls.maxPolarAngle = Math.PI / 2.05;
-controls.minDistance = 7;
-controls.maxDistance = 28;
+// Decorative upper wall edges
+wall(0,3.12,-6.1,20,.12,.32,M.pink2);
+wall(-10,3.12,.5,.32,.12,13,M.pink2);
+wall(10,3.12,.5,.32,.12,13,M.pink2);
 
-scene.add(new THREE.HemisphereLight(0xffffff, 0xcbb8c9, 2));
+// Window frames and glass
+function windowAt(x,y,z,w=2.2){
+ box(scene,x,y,z,w,.12,.14,M.white);
+ box(scene,x,y,z,w,.12,.14,M.white);
+ const glass=new THREE.MeshStandardMaterial({color:'#b8dbe6',transparent:true,opacity:.65});
+ box(scene,x,y,z,w-.16,1.25,.06,glass);
+ box(scene,x,y,z,.09,1.3,.12,M.white);
+ box(scene,x,y,z,w,.09,.12,M.white);
+}
+windowAt(-5,1.85,-6.0,3);
+windowAt(5,1.85,-6.0,3);
+windowAt(-10,1.85,-2.5,2.3);
+windowAt(10,1.85,4.5,2.3);
 
-const sunlight = new THREE.DirectionalLight(0xffffff, 2.5);
-sunlight.position.set(-7, 13, 9);
-sunlight.castShadow = true;
-sunlight.shadow.mapSize.set(1024, 1024);
-scene.add(sunlight);
+// Doorway decorations
+function doorway(x,z){
+ box(scene,x-.7,1.1,z,.12,2.2,.18,M.wood2);
+ box(scene,x+.7,1.1,z,.12,2.2,.18,M.wood2);
+ box(scene,x,2.18,z,1.5,.12,.18,M.wood2);
+}
+doorway(-5,1.1);doorway(5,1.1);
+doorway(0,-3.9);doorway(0,5.25);
 
-const ambient = new THREE.PointLight('#ffe4ef', 1.2, 30);
-ambient.position.set(0, 7, 0);
-scene.add(ambient);
+// Room labels
+label('COMFORT ZONE',-5,3.35,-2.5);
+label('SOUND LAB',5,3.35,-2.5);
+label('CAT HQ',-5,3.35,4.5);
+label('CHAOS DEN',5,3.35,4.5);
 
-const materials = {};
-function material(color) {
-  if (!materials[color]) {
-    materials[color] = new THREE.MeshStandardMaterial({
-      color,
-      roughness: 0.85
-    });
+// Comfort Zone: bed, pillows, side tables, wardrobe, lamp
+carpet(-5,-2.6,5.8,3.7,M.carpet);
+box(scene,-5, .55,-3.6,3.5,.65,2.5,M.wood2,{title:'Your safe little corner',text:'A room for slow mornings, soft blankets and feeling at home. ♡'});
+box(scene,-5, .95,-3.6,3.35,.25,2.35,M.white);
+box(scene,-5,1.18,-4.45,3.25,.45,.55,M.pink);
+box(scene,-6.0,1.1,-4.2,.75,.2,.65,M.white);
+box(scene,-4.0,1.1,-4.2,.75,.2,.65,M.white);
+box(scene,-7.8,.9,-3.3,1.0,1.8,1.2,M.wood,{title:'A little wardrobe',text:'All the versions of you get a place here. Even the ones still figuring things out.'});
+box(scene,-7.8,1.85,-3.3,1.05,.12,1.25,M.cream);
+cyl(scene,-3.1,1.1,-3.4,.38,.38,.16,M.wood,{title:'Bedside lamp',text:'A little light for every late-night thought.'});
+cyl(scene,-3.1,1.55,-3.4,.23,.12,.45,M.yellow);
+box(scene,-3.1,.55,-1.2,1.2,.8,.8,M.wood,{title:'Bedside table',text:'A tiny place for all the little things you love.'});
+box(scene,-3.1,1.05,-1.2,.95,.12,.65,M.cream);
+box(scene,-5,1.7,-5.94,2.2,1.15,.12,M.pink2,{title:'A reminder',text:'You deserve a space where you never have to pretend to be anything other than yourself.'});
+
+// Sound Lab: console, speakers, record player, guitar, sofa
+carpet(5,-2.5,7.5,4.5,M.carpet2);
+box(scene,5,.55,-5.0,4.2,.9,1.0,M.wood,{title:'Music console',text:'For every song that says what words cannot. Turn it up. ♡'});
+box(scene,5,1.05,-5.0,3.8,.12,.8,M.dark);
+for(let x of [3.4,6.6]){
+ box(scene,x,1.1,-5.0,.55,.6,.45,M.black,{title:'Speaker',text:'A little louder, please. This is the soundtrack of your life.'});
+ sphere(scene,x,1.1,-4.74,.16,M.grey);
+}
+cyl(scene,5,1.22,-5.0,.75,.75,.15,M.dark,{title:'Record player',text:'Some things are better on repeat. Like your favourite songs.'});
+cyl(scene,5,1.34,-5.0,.48,.48,.035,M.grey);
+cyl(scene,5.2,1.38,-5.0,.07,.07,.05,M.yellow);
+box(scene,7.7,.8,-2.2,2.0,.9,1.0,M.purple,{title:'The listening sofa',text:'A designated spot for listening to music and ignoring the world for a while.'});
+box(scene,7.7,1.25,-2.2,2.0,.2,1.0,M.lilac);
+box(scene,3.0,.75,-2.1,.45,1.5,.5,M.wood2,{title:'Guitar corner',text:'For all the feelings that need a melody.'},-.2);
+box(scene,3.0,1.6,-2.1,.65,.2,.65,M.wood2);
+box(scene,5,2.1,-5.93,2.5,1.0,.12,M.purple,{title:'Your soundtrack',text:'May your life always have a song for every season.'});
+
+// Cat HQ: cat beds, scratching post, food bowls, toys
+carpet(-5,4.5,7.5,4.5,M.mint);
+box(scene,-7.5,.4,4.2,1.5,.55,1.4,M.pink,{title:'Cat nap station',text:'Official headquarters for tiny paws and very important naps.'});
+box(scene,-7.5,.72,4.2,1.3,.15,1.2,M.white);
+cyl(scene,-3.1,1.0,4.2,.24,.24,1.7,M.wood,{title:'Scratching post',text:'A very important piece of furniture. The sofa is not for scratching. Allegedly.'});
+cyl(scene,-3.1,1.9,4.2,.65,.65,.15,M.pink);
+cyl(scene,-6.5,.25,6.1,.38,.38,.12,M.grey,{title:'Food bowl',text:'The most important meeting of the day.'});
+cyl(scene,-5.4,.25,6.1,.38,.38,.12,M.blue,{title:'Water bowl',text:'Hydration is important, even for tiny supervisors.'});
+sphere(scene,-4.3,.3,5.8,.3,M.yellow,{title:'Cat toy',text:'A suspiciously small object that will cause a suspiciously large amount of chaos.'});
+box(scene,-5,1.9,1.6,2.6,1.1,.12,M.green,{title:'Cat HQ noticeboard',text:'Rules: naps are mandatory, treats are a right, and humans are staff.'});
+
+// Chaos Den: desk, laptop, books, beanbag, scattered clutter
+carpet(5,4.5,7.5,4.5,M.cream);
+box(scene,5,.55,2.1,3.5,.75,1.3,M.wood,{title:'The command centre',text:'For ambitious plans, 2 a.m. thoughts and tabs that will never be closed.'});
+box(scene,5,1.05,2.0,1.4,.9,.12,M.dark,{title:'Laptop',text:'Currently running on 47 open tabs and pure determination.'});
+box(scene,5,1.55,2.0,1.2,.75,.06,M.blue);
+box(scene,3.1,.9,2.1,.55,.35,.55,M.pink,{title:'A stack of books',text:'A little knowledge, a little chaos, and a lot of bookmarks.'});
+box(scene,3.1,1.15,2.1,.55,.12,.55,M.cream);
+box(scene,7.4,.6,5.5,1.7,.7,1.5,M.purple,{title:'The chaos beanbag',text:'A soft landing place for all the beautifully chaotic thoughts.'});
+sphere(scene,7.4,.9,5.5,.55,M.lilac);
+box(scene,6,.3,6.3,.8,.12,.7,M.pink,{title:'Mystery object',text:'Nobody knows what this is. It has been here for months. We respect it.'});
+box(scene,5,2.0,1.05,2.8,1.1,.12,M.pink2,{title:'The wall of ideas',text:'Dream big. Make weird things. Never apologise for being a little too much.'});
+
+// Rooftop terrace behind the house
+box(scene,0,-.05,10.8,19,.25,6.2,mat('#dfc8e2'),{title:'Birthday rooftop',text:'The best place in the whole little world. This one is for celebrating you. Happy birthday!'});
+box(scene,0,.12,10.8,18.7,.08,5.9,M.pink);
+for(let x of [-8.8,8.8]){
+ box(scene,x,.65,10.8,.18,1.2,5.8,M.white);
+}
+for(let z of [8.0,13.6])box(scene,0,.65,z,17.6,1.2,.18,M.white);
+
+// Rooftop party table
+cyl(scene,0,.75,10.7,1.5,1.5,.22,M.white,{title:'Birthday cake',text:'One more candle, one more year of being wonderfully, ridiculously you. Make a wish!'});
+cyl(scene,0,1.15,10.7,.9,.9,.65,M.pink);
+cyl(scene,0,1.52,10.7,.75,.75,.15,M.cream);
+sphere(scene,0,1.85,10.7,.22,M.yellow);
+for(let i=0;i<8;i++){
+ const a=i*Math.PI/4;
+ cyl(scene,Math.cos(a)*1.05,.95,10.7+Math.sin(a)*1.05,.08,.08,.25,M.pink2);
+}
+box(scene,-5,.55,10.6,2.6,.7,1.2,M.purple,{title:'Party sofa',text:'Reserved for the birthday girl and her favourite people.'});
+box(scene,-5,.95,10.6,2.6,.18,1.2,M.lilac);
+box(scene,5,.5,10.6,2.0,.6,1.1,M.wood,{title:'Gift table',text:'A few little surprises, wrapped with an unreasonable amount of love.'});
+for(let x of [-7,-6,6,7]){
+ cyl(scene,x,.9,12.2,.12,.12,1.2,M.pink2);
+ sphere(scene,x,1.65,12.2,.38,[M.yellow,M.pink,M.lilac,M.blue][Math.abs(x)%4]);
+}
+for(let x of [-8,8]){
+ cyl(scene,x,.6,8.8,.48,.48,1.0,M.wood);
+ sphere(scene,x,1.35,8.8,.7,M.green);
+}
+
+// Stairs from house to rooftop
+for(let i=0;i<7;i++){
+ box(scene,-8+i*.35,.12+i*.12,7.7+i*.45,2.2,.18,.55,M.wood2);
+}
+
+// Plants
+function plant(x,z){
+ cyl(scene,x,.3,z,.42,.34,.6,M.pink2);
+ cyl(scene,x,.65,z,.07,.07,.8,M.wood);
+ for(let i=0;i<5;i++){
+  const a=i*Math.PI*2/5;
+  const leaf=sphere(scene,x+Math.cos(a)*.28,1.0+Math.sin(i)*.1,z+Math.sin(a)*.28,.23,M.green);
+  leaf.scale.set(.7,1.5,.7);
+ }
+}
+plant(-9,-5.1);plant(9,-5.1);plant(-9,6.5);plant(9,6.5);
+plant(-8,12);plant(8,12);
+
+// Cats: simple cute low-poly bodies, heads, ears and tails
+function makeCat(x,z,color,name){
+ const g=group(scene,x,.12,z);
+ const fur=mat(color);
+ const body=sphere(g,0,.42,0,.48,fur,{title:name,text:'A tiny furry resident of this little world. Tap around to discover more surprises. ♡'});
+ body.scale.set(1.35,.8,.85);
+ sphere(g,.38,.77,0,.34,fur);
+ for(let s of [-1,1]){
+  const ear=new THREE.Mesh(new THREE.ConeGeometry(.15,.34,4),fur);
+  ear.position.set(.22+s*.2,1.08,s*.2);ear.rotation.z=-.15;g.add(ear);
+  sphere(g,.51,.8,s*.13,.045,M.dark);
+ }
+ const tail=new THREE.Mesh(new THREE.TorusGeometry(.32,.07,8,16,Math.PI),fur);
+ tail.position.set(-.48,.58,0);tail.rotation.z=Math.PI/2;g.add(tail);
+ const legs=[];
+ for(let s of [-1,1]){
+  for(let q of [-1,1]){
+   const leg=box(g,s*.23,.18,q*.2,.15,.32,.15,fur);
+   legs.push(leg);
   }
-  return materials[color];
+ }
+ cats.push({g,x,z,phase:Math.random()*6,legs});
+}
+makeCat(-6.3,4.8,'#f0e0d1','Mochi');
+makeCat(-4.0,5.7,'#77717b','The tiny supervisor');
+makeCat(6.7,4.4,'#e5b98d','The chaos agent');
+
+// Extra little decorative objects
+sphere(scene,-8.3,-.02,-.2,.23,M.yellow,{title:'Hidden little star',text:'You found a tiny star! A reminder that even the smallest things can make a world feel magical.'});
+sphere(scene,8.2,-.02,-.3,.23,M.pink2,{title:'Another little star',text:'Another hidden sparkle. Keep exploring, there are more surprises around here.'});
+sphere(scene,8.3,-.02,6.8,.23,M.lilac,{title:'Secret sparkle',text:'A little secret just for you. You make ordinary days feel special.'});
+
+// Decorative exterior base and garden path
+for(let i=0;i<8;i++){
+ const x=-7+i*2;
+ cyl(scene,x,-.02,15.0,.28,.28,.08,M.cream);
+}
+for(let i=0;i<5;i++){
+ sphere(scene,-11,.12,-4+i*2,.2,M.pink);
+ sphere(scene,11,.12,-4+i*2,.2,M.pink);
 }
 
-const clickable = [];
-const cats = [];
-const rooms = [];
-
-function box(parent, x, y, z, w, h, d, color, title, message) {
-  const mesh = new THREE.Mesh(
-    new THREE.BoxGeometry(w, h, d),
-    material(color)
-  );
-
-  mesh.position.set(x, y, z);
-  mesh.castShadow = true;
-  mesh.receiveShadow = true;
-  parent.add(mesh);
-
-  if (title) {
-    mesh.userData = { title, message };
-    clickable.push(mesh);
+// Raycasting interaction
+const raycaster=new THREE.Raycaster();
+const pointer=new THREE.Vector2();
+let downX=0,downY=0;
+renderer.domElement.addEventListener('pointerdown',e=>{downX=e.clientX;downY=e.clientY;});
+renderer.domElement.addEventListener('pointerup',e=>{
+ if(Math.abs(e.clientX-downX)>8||Math.abs(e.clientY-downY)>8)return;
+ pointer.x=(e.clientX/innerWidth)*2-1;
+ pointer.y=-(e.clientY/innerHeight)*2+1;
+ raycaster.setFromCamera(pointer,camera);
+ const hits=raycaster.intersectObjects(clickable,true);
+ for(const hit of hits){
+  let obj=hit.object;
+  while(obj&&!obj.userData.info)obj=obj.parent;
+  if(obj&&obj.userData.info){
+   document.getElementById('msgTitle').textContent=obj.userData.info.title;
+   document.getElementById('msgText').textContent=obj.userData.info.text;
+   document.getElementById('message').style.display='block';
+   break;
   }
+ }
+});
+document.getElementById('close').onclick=()=>document.getElementById('message').style.display='none';
+document.getElementById('home').onclick=()=>{
+ camera.position.set(23,24,29);
+ controls.target.set(0,1,2);
+ controls.update();
+ document.getElementById('message').style.display='none';
+};
 
-  return mesh;
-}
-
-function ball(parent, x, y, z, r, color, title, message) {
-  const mesh = new THREE.Mesh(
-    new THREE.SphereGeometry(r, 16, 12),
-    material(color)
-  );
-
-  mesh.position.set(x, y, z);
-  mesh.castShadow = true;
-  parent.add(mesh);
-
-  if (title) {
-    mesh.userData = { title, message };
-    clickable.push(mesh);
-  }
-
-  return mesh;
-}
-
-function label(text, x, y, z) {
-  const canvas = document.createElement('canvas');
-  canvas.width = 512;
-  canvas.height = 128;
-
-  const ctx = canvas.getContext('2d');
-  ctx.fillStyle = '#fffafc';
-  ctx.roundRect(8, 8, 496, 112, 30);
-  ctx.fill();
-
-  ctx.fillStyle = '#765c70';
-  ctx.font = 'bold 46px Georgia';
-  ctx.textAlign = 'center';
-  ctx.textBaseline = 'middle';
-  ctx.fillText(text, 256, 65);
-
-  const texture = new THREE.CanvasTexture(canvas);
-  const sprite = new THREE.Sprite(
-    new THREE.SpriteMaterial({ map: texture, transparent: true })
-  );
-
-  sprite.position.set(x, y, z);
-  sprite.scale.set(2.8, 0.7, 1);
-  scene.add(sprite);
-}
-
-function makeRoom(name, x, z, floorColor, message) {
-  const group = new THREE.Group();
-  group.position.set(x, 0, z);
-  scene.add(group);
-
-  const floor = box(group, 0, -0.12, 0,
-    3.9, 0.24, 3.9, floorColor);
-
-  floor.userData = {
-    title: name,
-    message
-  };
-  clickable.push(floor);
-
-  // Two walls, leaving the front and one side open.
-  box(group, 0, 1.25, -1.95, 3.9, 2.5, 0.16, '#fff5f7');
-  box(group, -1.95, 1.25, 0, 0.16, 2.5, '#fff5f7');
-
-  // Back wall decoration.
-  box(group, 0, 0.8, -1.84, 1.1, 0.8, 0.035, '#f5e2e9');
-
-  label(name, x, 3.05, z);
-
-  rooms.push({ name, x, z });
-  return group;
-}
-
-// Main foundation.
-box(scene, 0, -0.38, 1, 8.6, 0.3, 12.7, '#ead9dc');
-
-// Four rooms.
-const bedroom = makeRoom(
-  'The Comfort Zone', -2, -2, '#e9c9d3',
-  'A little space for rest, comfort and all the things that make you happy.'
-);
-
-const music = makeRoom(
-  'The Sound Lab', 2, -2, '#d8d0ee',
-  'This room belongs to music, favourite songs and your own little universe.'
-);
-
-const catsRoom = makeRoom(
-  'Cat HQ', -2, 2, '#d9e8d4',
-  'The cats are in charge here. We are simply guests.'
-);
-
-const chaos = makeRoom(
-  'The Chaos Den', 2, 2, '#e5d4eb',
-  'A perfectly questionable collection of thoughts and questionable decisions.'
-);
-
-// Rooftop platform.
-const roof = new THREE.Group();
-roof.position.set(0, 0, 6.2);
-scene.add(roof);
-
-box(roof, 0, -0.12, 0, 4.1, 0.24, 3.8, '#f1d9c6');
-box(roof, 0, 0.15, -1.85, 4.1, 0.3, 0.12, '#f4e4dc');
-
-label('The Birthday Rooftop', 0, 1.4, 6.2);
-
-// Bedroom furniture.
-box(bedroom, 0.4, 0.32, 0.2, 1.7, 0.5, 1.9,
-  '#dcaec2', 'The bed',
-  'A reminder that you deserve rest, comfort and all the soft things in life.');
-
-box(bedroom, 0.4, 0.6, 0.1, 1.55, 0.12, 1.65, '#fff5f4');
-box(bedroom, 0.4, 0.8, -0.45, 0.6, 0.2, 0.45,
-  '#f8e5eb', 'Pillows',
-  'A little pile of softness. Just like this corner of the house.');
-
-box(bedroom, -1.15, 0.5, -0.8, 0.65, 0.8, 0.65,
-  '#c69bad', 'The journal',
-  'This is where all the little thoughts and memories live.');
-
-box(bedroom, 1.2, 0.55, -1.0, 0.5, 1.1, 0.5, '#d5b4c4');
-
-// Music room.
-box(music, 0.1, 0.3, -0.2, 1.5, 0.5, 0.9,
-  '#a99acb', 'Music player',
-  'Your favourite songs deserve their own room in this little world.');
-
-box(music, 0.1, 0.75, -0.2, 0.65, 0.12, 0.65, '#f5e8f6');
-box(music, -1.15, 0.65, -1.1, 0.45, 1.2, 0.45,
-  '#887cae', 'Speaker',
-  'Turn the volume up. This room is dedicated to your music obsession.');
-
-box(music, 1.25, 0.8, -1.65, 0.9, 0.75, 0.08,
-  '#bdaedc', 'Music poster',
-  'A little wall space for the artists who make your days better.');
-
-// Cat room.
-box(catsRoom, 0.7, 0.4, -0.5, 0.8, 0.8, 0.8,
-  '#b9cda9', 'Cat tree',
-  'A five-star luxury residence for the tiny furry landlords.');
-
-box(catsRoom, -1.1, 0.15, 0.5, 0.6, 0.2, 0.6,
-  '#f5e6d0', 'Food bowl',
-  'The most important appointment of the day: dinner.');
-
-box(catsRoom, 1.1, 0.12, 0.8, 0.7, 0.16, 0.5,
-  '#d5e4ca', 'Cat bed',
-  'Reserved for someone who pays absolutely no rent.');
-
-// Chaos room.
-box(chaos, 0.4, 0.4, -0.2, 1.2, 0.7, 0.8,
-  '#a994b9', 'The computer',
-  'A safe place for your thoughts. Probably not safe for anyone else.');
-
-box(chaos, 0.4, 0.85, -0.2, 0.9, 0.65, 0.08,
-  '#e4cce8', 'The screen',
-  'Error 404: Normal thoughts not found.');
-
-box(chaos, -1.2, 0.7, -1.2, 0.55, 1.2, 0.5,
-  '#bca5c9', 'The mysterious drawer',
-  'You have found a suspiciously mysterious drawer. More secrets coming soon.');
-
-// Rooftop birthday details.
-box(roof, 0, 0.3, 0.1, 1.3, 0.45, 1.1,
-  '#e8b4c7', 'Birthday cake',
-  'Happy birthday! I hope this year brings you all the lovely things you deserve.');
-
-ball(roof, 0, 0.65, 0.1, 0.18, '#fff0a9');
-box(roof, -1.2, 0.3, 0.4, 0.65, 0.6, 0.65,
-  '#e8b6c6', 'A present',
-  'A little present for someone who deserves a lot of them.');
-
-box(roof, 1.2, 0.3, -0.6, 0.8, 0.4, 0.8,
-  '#d5c4e4', 'The final surprise',
-  'This space is saved for your final birthday letter.');
-
-// Create simple stylised cats.
-function makeCat(parent, x, z, color, name, message) {
-  const cat = new THREE.Group();
-  cat.position.set(x, 0.25, z);
-  parent.add(cat);
-
-  ball(cat, 0, 0.22, 0, 0.3, color, name, message);
-  ball(cat, 0, 0.5, -0.2, 0.22, color, name, message);
-
-  // Ears.
-  ball(cat, -0.13, 0.7, -0.22, 0.09, color, name, message);
-  ball(cat, 0.13, 0.7, -0.22, 0.09, color, name, message);
-
-  // Eyes.
-  ball(cat, -0.08, 0.52, -0.39, 0.025, '#51444d');
-  ball(cat, 0.08, 0.52, -0.39, 0.025, '#51444d');
-
-  cats.push(cat);
-  return cat;
-}
-
-makeCat(catsRoom, -0.8, 0.1, '#f2dfcc',
-  'The sleepy cat',
-  'I have important business today. It involves sleeping for approximately 17 hours.');
-
-makeCat(catsRoom, 0.7, 1.1, '#9e8eaa',
-  'The mischievous cat',
-  'I knocked something over. I regret nothing.');
-
-makeCat(bedroom, 1.1, 0.8, '#f5e5e8',
-  'The tiny visitor',
-  'I came here for cuddles. Please do not disturb.');
-
-const raycaster = new THREE.Raycaster();
-const pointer = new THREE.Vector2();
-
-function showMessage(title, message) {
-  document.querySelector('#msgTitle').textContent = title;
-  document.querySelector('#msgText').textContent = message;
-  document.querySelector('#message').style.display = 'block';
-}
-
-function closeMessage() {
-  document.querySelector('#message').style.display = 'none';
-}
-
-document.querySelector('#close').addEventListener('click', closeMessage);
-
-renderer.domElement.addEventListener('pointerdown', event => {
-  pointer.x = (event.clientX / innerWidth) * 2 - 1;
-  pointer.y = -(event.clientY / innerHeight) * 2 + 1;
-  raycaster.setFromCamera(pointer, camera);
-
-  const hits = raycaster.intersectObjects(clickable, false);
-
-  if (hits.length) {
-    const item = hits[0].object.userData;
-    if (item.title) showMessage(item.title, item.message);
-  }
+// Camera resize
+addEventListener('resize',()=>{
+ camera.aspect=innerWidth/innerHeight;
+ camera.updateProjectionMatrix();
+ renderer.setSize(innerWidth,innerHeight);
 });
 
-document.querySelector('#home').addEventListener('click', () => {
-  camera.position.set(12, 14, 17);
-  controls.target.set(0, 0, 1);
-  controls.update();
-  closeMessage();
-});
-
-// Gentle cat movement.
-function animate(time) {
-  requestAnimationFrame(animate);
-
-  cats.forEach((cat, i) => {
-    cat.position.y = 0.25 + Math.sin(time * 0.0015 + i) * 0.045;
-  });
-
-  controls.update();
-  renderer.render(scene, camera);
+// Animation
+function animate(){
+ requestAnimationFrame(animate);
+ const t=clock.getElapsedTime();
+ cats.forEach((cat,i)=>{
+  cat.g.position.x=cat.x+Math.sin(t*.55+cat.phase)*.65;
+  cat.g.position.z=cat.z+Math.cos(t*.45+cat.phase)*.45;
+  cat.g.rotation.y=Math.sin(t*.55+cat.phase)*.3;
+  cat.g.position.y=.12+Math.abs(Math.sin(t*2+cat.phase))*.07;
+ });
+ controls.update();
+ renderer.render(scene,camera);
 }
-
-animate(0);
-
-window.addEventListener('resize', () => {
-  camera.aspect = innerWidth / innerHeight;
-  camera.updateProjectionMatrix();
-  renderer.setSize(innerWidth, innerHeight);
-  renderer.setPixelRatio(Math.min(devicePixelRatio, 1.7));
-});
-
+animate();
+document.getElementById('loading').style.display='none';
 </script>
 </body>
 </html>
