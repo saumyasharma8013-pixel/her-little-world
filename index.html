@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Her Little World ♡</title>
+
+<style>
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  overflow: hidden;
+  background: #f8edf2;
+  color: #71566c;
+  font-family: Georgia, serif;
+}
+
+canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  touch-action: none;
+}
+
+header {
+  position: absolute;
+  z-index: 2;
+  top: 15px;
+  left: 0;
+  width: 100%;
+  text-align: center;
+  pointer-events: none;
+}
+
+h1 {
+  margin: 0;
+  font-size: clamp(22px, 4vw, 34px);
+  text-shadow: 0 2px white;
+}
+
+header p {
+  margin: 5px;
+  font: 12px Arial;
+}
+
+#home, #hint {
+  position: absolute;
+  z-index: 3;
+}
+
+#home {
+  top: 15px;
+  right: 14px;
+  border: 0;
+  border-radius: 20px;
+  background: #fffafd;
+  color: #71566c;
+  padding: 10px 15px;
+}
+
+#hint {
+  bottom: 12px;
+  width: 100%;
+  text-align: center;
+  font: 11px Arial;
+  color: #927d8c;
+  pointer-events: none;
+}
+
+#message {
+  display: none;
+  position: absolute;
+  z-index: 5;
+  left: 50%;
+  bottom: 45px;
+  transform: translateX(-50%);
+  width: min(88%, 370px);
+  padding: 20px;
+  text-align: center;
+  border-radius: 20px;
+  background: #fffafd;
+  box-shadow: 0 8px 35px #65445b33;
+  border: 1px solid #ead8e3;
+}
+
+#message strong {
+  display: block;
+  margin-bottom: 9px;
+  font-size: 19px;
+}
+
+#message p {
+  margin: 0;
+  line-height: 1.5;
+  font-size: 14px;
+}
+
+#message button {
+  border: 0;
+  border-radius: 20px;
+  padding: 9px 20px;
+  margin-top: 15px;
+  background: #ead8e9;
+  color: #71566c;
+}
+</style>
+
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+  }
+}
+</script>
+</head>
+
+<body>
+
+<header>
+  <h1>Her Little World ♡</h1>
+  <p>A tiny house filled with little pieces of her</p>
+</header>
+
+<button id="home">⌂ Full house</button>
+
+<div id="message">
+  <strong id="msgTitle"></strong>
+  <p id="msgText"></p>
+  <button id="close">Close ♡</button>
+</div>
+
+<div id="hint">
+  Drag to explore · Pinch or scroll to zoom · Tap objects for surprises
+</div>
+
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from
+'https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/controls/OrbitControls.js';
+
+const scene = new THREE.Scene();
+scene.background = new THREE.Color('#f8edf2');
+
+const camera = new THREE.PerspectiveCamera(
+  35, innerWidth / innerHeight, 0.1, 100
+);
+
+camera.position.set(12, 14, 17);
+
+const renderer = new THREE.WebGLRenderer({
+  antialias: true,
+  powerPreference: 'high-performance'
+});
+
+renderer.setSize(innerWidth, innerHeight);
+renderer.setPixelRatio(Math.min(devicePixelRatio, 1.7));
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+renderer.outputColorSpace = THREE.SRGBColorSpace;
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.15;
+
+document.body.insertBefore(
+  renderer.domElement,
+  document.querySelector('header')
+);
+
+const controls = new OrbitControls(camera, renderer.domElement);
+controls.target.set(0, 0, 1);
+controls.enableDamping = true;
+controls.dampingFactor = 0.06;
+controls.maxPolarAngle = Math.PI / 2.05;
+controls.minDistance = 7;
+controls.maxDistance = 28;
+
+scene.add(new THREE.HemisphereLight(0xffffff, 0xcbb8c9, 2));
+
+const sunlight = new THREE.DirectionalLight(0xffffff, 2.5);
+sunlight.position.set(-7, 13, 9);
+sunlight.castShadow = true;
+sunlight.shadow.mapSize.set(1024, 1024);
+scene.add(sunlight);
+
+const ambient = new THREE.PointLight('#ffe4ef', 1.2, 30);
+ambient.position.set(0, 7, 0);
+scene.add(ambient);
+
+const materials = {};
+function material(color) {
+  if (!materials[color]) {
+    materials[color] = new THREE.MeshStandardMaterial({
+      color,
+      roughness: 0.85
+    });
+  }
+  return materials[color];
+}
+
+const clickable = [];
+const cats = [];
+const rooms = [];
+
+function box(parent, x, y, z, w, h, d, color, title, message) {
+  const mesh = new THREE.Mesh(
+    new THREE.BoxGeometry(w, h, d),
+    material(color)
+  );
+
+  mesh.position.set(x, y, z);
+  mesh.castShadow = true;
+  mesh.receiveShadow = true;
+  parent.add(mesh);
+
+  if (title) {
+    mesh.userData = { title, message };
+    clickable.push(mesh);
+  }
+
+  return mesh;
+}
+
+function ball(parent, x, y, z, r, color, title, message) {
+  const mesh = new THREE.Mesh(
+    new THREE.SphereGeometry(r, 16, 12),
+    material(color)
+  );
+
+  mesh.position.set(x, y, z);
+  mesh.castShadow = true;
+  parent.add(mesh);
+
+  if (title) {
+    mesh.userData = { title, message };
+    clickable.push(mesh);
+  }
+
+  return mesh;
+}
+
+function label(text, x, y, z) {
+  const canvas = document.createElement('canvas');
+  canvas.width = 512;
+  canvas.height = 128;
+
+  const ctx = canvas.getContext('2d');
+  ctx.fillStyle = '#fffafc';
+  ctx.roundRect(8, 8, 496, 112, 30);
+  ctx.fill();
+
+  ctx.fillStyle = '#765c70';
+  ctx.font = 'bold 46px Georgia';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText(text, 256, 65);
+
+  const texture = new THREE.CanvasTexture(canvas);
+  const sprite = new THREE.Sprite(
+    new THREE.SpriteMaterial({ map: texture, transparent: true })
+  );
+
+  sprite.position.set(x, y, z);
+  sprite.scale.set(2.8, 0.7, 1);
+  scene.add(sprite);
+}
+
+function makeRoom(name, x, z, floorColor, message) {
+  const group = new THREE.Group();
+  group.position.set(x, 0, z);
+  scene.add(group);
+
+  const floor = box(group, 0, -0.12, 0,
+    3.9, 0.24, 3.9, floorColor);
+
+  floor.userData = {
+    title: name,
+    message
+  };
+  clickable.push(floor);
+
+  // Two walls, leaving the front and one side open.
+  box(group, 0, 1.25, -1.95, 3.9, 2.5, 0.16, '#fff5f7');
+  box(group, -1.95, 1.25, 0, 0.16, 2.5, '#fff5f7');
+
+  // Back wall decoration.
+  box(group, 0, 0.8, -1.84, 1.1, 0.8, 0.035, '#f5e2e9');
+
+  label(name, x, 3.05, z);
+
+  rooms.push({ name, x, z });
+  return group;
+}
+
+// Main foundation.
+box(scene, 0, -0.38, 1, 8.6, 0.3, 12.7, '#ead9dc');
+
+// Four rooms.
+const bedroom = makeRoom(
+  'The Comfort Zone', -2, -2, '#e9c9d3',
+  'A little space for rest, comfort and all the things that make you happy.'
+);
+
+const music = makeRoom(
+  'The Sound Lab', 2, -2, '#d8d0ee',
+  'This room belongs to music, favourite songs and your own little universe.'
+);
+
+const catsRoom = makeRoom(
+  'Cat HQ', -2, 2, '#d9e8d4',
+  'The cats are in charge here. We are simply guests.'
+);
+
+const chaos = makeRoom(
+  'The Chaos Den', 2, 2, '#e5d4eb',
+  'A perfectly questionable collection of thoughts and questionable decisions.'
+);
+
+// Rooftop platform.
+const roof = new THREE.Group();
+roof.position.set(0, 0, 6.2);
+scene.add(roof);
+
+box(roof, 0, -0.12, 0, 4.1, 0.24, 3.8, '#f1d9c6');
+box(roof, 0, 0.15, -1.85, 4.1, 0.3, 0.12, '#f4e4dc');
+
+label('The Birthday Rooftop', 0, 1.4, 6.2);
+
+// Bedroom furniture.
+box(bedroom, 0.4, 0.32, 0.2, 1.7, 0.5, 1.9,
+  '#dcaec2', 'The bed',
+  'A reminder that you deserve rest, comfort and all the soft things in life.');
+
+box(bedroom, 0.4, 0.6, 0.1, 1.55, 0.12, 1.65, '#fff5f4');
+box(bedroom, 0.4, 0.8, -0.45, 0.6, 0.2, 0.45,
+  '#f8e5eb', 'Pillows',
+  'A little pile of softness. Just like this corner of the house.');
+
+box(bedroom, -1.15, 0.5, -0.8, 0.65, 0.8, 0.65,
+  '#c69bad', 'The journal',
+  'This is where all the little thoughts and memories live.');
+
+box(bedroom, 1.2, 0.55, -1.0, 0.5, 1.1, 0.5, '#d5b4c4');
+
+// Music room.
+box(music, 0.1, 0.3, -0.2, 1.5, 0.5, 0.9,
+  '#a99acb', 'Music player',
+  'Your favourite songs deserve their own room in this little world.');
+
+box(music, 0.1, 0.75, -0.2, 0.65, 0.12, 0.65, '#f5e8f6');
+box(music, -1.15, 0.65, -1.1, 0.45, 1.2, 0.45,
+  '#887cae', 'Speaker',
+  'Turn the volume up. This room is dedicated to your music obsession.');
+
+box(music, 1.25, 0.8, -1.65, 0.9, 0.75, 0.08,
+  '#bdaedc', 'Music poster',
+  'A little wall space for the artists who make your days better.');
+
+// Cat room.
+box(catsRoom, 0.7, 0.4, -0.5, 0.8, 0.8, 0.8,
+  '#b9cda9', 'Cat tree',
+  'A five-star luxury residence for the tiny furry landlords.');
+
+box(catsRoom, -1.1, 0.15, 0.5, 0.6, 0.2, 0.6,
+  '#f5e6d0', 'Food bowl',
+  'The most important appointment of the day: dinner.');
+
+box(catsRoom, 1.1, 0.12, 0.8, 0.7, 0.16, 0.5,
+  '#d5e4ca', 'Cat bed',
+  'Reserved for someone who pays absolutely no rent.');
+
+// Chaos room.
+box(chaos, 0.4, 0.4, -0.2, 1.2, 0.7, 0.8,
+  '#a994b9', 'The computer',
+  'A safe place for your thoughts. Probably not safe for anyone else.');
+
+box(chaos, 0.4, 0.85, -0.2, 0.9, 0.65, 0.08,
+  '#e4cce8', 'The screen',
+  'Error 404: Normal thoughts not found.');
+
+box(chaos, -1.2, 0.7, -1.2, 0.55, 1.2, 0.5,
+  '#bca5c9', 'The mysterious drawer',
+  'You have found a suspiciously mysterious drawer. More secrets coming soon.');
+
+// Rooftop birthday details.
+box(roof, 0, 0.3, 0.1, 1.3, 0.45, 1.1,
+  '#e8b4c7', 'Birthday cake',
+  'Happy birthday! I hope this year brings you all the lovely things you deserve.');
+
+ball(roof, 0, 0.65, 0.1, 0.18, '#fff0a9');
+box(roof, -1.2, 0.3, 0.4, 0.65, 0.6, 0.65,
+  '#e8b6c6', 'A present',
+  'A little present for someone who deserves a lot of them.');
+
+box(roof, 1.2, 0.3, -0.6, 0.8, 0.4, 0.8,
+  '#d5c4e4', 'The final surprise',
+  'This space is saved for your final birthday letter.');
+
+// Create simple stylised cats.
+function makeCat(parent, x, z, color, name, message) {
+  const cat = new THREE.Group();
+  cat.position.set(x, 0.25, z);
+  parent.add(cat);
+
+  ball(cat, 0, 0.22, 0, 0.3, color, name, message);
+  ball(cat, 0, 0.5, -0.2, 0.22, color, name, message);
+
+  // Ears.
+  ball(cat, -0.13, 0.7, -0.22, 0.09, color, name, message);
+  ball(cat, 0.13, 0.7, -0.22, 0.09, color, name, message);
+
+  // Eyes.
+  ball(cat, -0.08, 0.52, -0.39, 0.025, '#51444d');
+  ball(cat, 0.08, 0.52, -0.39, 0.025, '#51444d');
+
+  cats.push(cat);
+  return cat;
+}
+
+makeCat(catsRoom, -0.8, 0.1, '#f2dfcc',
+  'The sleepy cat',
+  'I have important business today. It involves sleeping for approximately 17 hours.');
+
+makeCat(catsRoom, 0.7, 1.1, '#9e8eaa',
+  'The mischievous cat',
+  'I knocked something over. I regret nothing.');
+
+makeCat(bedroom, 1.1, 0.8, '#f5e5e8',
+  'The tiny visitor',
+  'I came here for cuddles. Please do not disturb.');
+
+const raycaster = new THREE.Raycaster();
+const pointer = new THREE.Vector2();
+
+function showMessage(title, message) {
+  document.querySelector('#msgTitle').textContent = title;
+  document.querySelector('#msgText').textContent = message;
+  document.querySelector('#message').style.display = 'block';
+}
+
+function closeMessage() {
+  document.querySelector('#message').style.display = 'none';
+}
+
+document.querySelector('#close').addEventListener('click', closeMessage);
+
+renderer.domElement.addEventListener('pointerdown', event => {
+  pointer.x = (event.clientX / innerWidth) * 2 - 1;
+  pointer.y = -(event.clientY / innerHeight) * 2 + 1;
+  raycaster.setFromCamera(pointer, camera);
+
+  const hits = raycaster.intersectObjects(clickable, false);
+
+  if (hits.length) {
+    const item = hits[0].object.userData;
+    if (item.title) showMessage(item.title, item.message);
+  }
+});
+
+document.querySelector('#home').addEventListener('click', () => {
+  camera.position.set(12, 14, 17);
+  controls.target.set(0, 0, 1);
+  controls.update();
+  closeMessage();
+});
+
+// Gentle cat movement.
+function animate(time) {
+  requestAnimationFrame(animate);
+
+  cats.forEach((cat, i) => {
+    cat.position.y = 0.25 + Math.sin(time * 0.0015 + i) * 0.045;
+  });
+
+  controls.update();
+  renderer.render(scene, camera);
+}
+
+animate(0);
+
+window.addEventListener('resize', () => {
+  camera.aspect = innerWidth / innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(innerWidth, innerHeight);
+  renderer.setPixelRatio(Math.min(devicePixelRatio, 1.7));
+});
+
+</script>
+</body>
+</html>
