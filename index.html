@@ -23,6 +23,34 @@ button{border:0;border-radius:22px;padding:10px 20px;background:#dcaec8;color:wh
 @media(max-width:600px){#top{top:12px}#top p{font-size:10px}#hint{font-size:10px;bottom:10px}}
 </style>
 
+<script>
+window.addEventListener('error', function(e) {
+  showError('JavaScript error: ' + (e.message || 'Unknown error'));
+});
+
+window.addEventListener('unhandledrejection', function(e) {
+  showError('Loading error: ' + (e.reason?.message || e.reason || 'Unknown error'));
+});
+
+function showError(message) {
+  const loading = document.getElementById('loading');
+  if (loading) {
+    loading.style.display = 'grid';
+    loading.innerHTML =
+      '<div style="padding:24px;text-align:center;max-width:320px">' +
+      '<h3>Oops! Something went wrong ♡</h3>' +
+      '<p style="font:13px Arial;line-height:1.6;overflow-wrap:anywhere">' +
+      message + '</p>' +
+      '<p style="font:12px Arial">Please send this error message to ChatGPT.</p>' +
+      '</div>';
+  }
+}
+
+window.loadTimeout = setTimeout(function() {
+  showError('The 3D scene took too long to load. Check your internet connection and Three.js CDN access.');
+}, 20000);
+</script>
+
 <script type="importmap">
 {
   "imports": {
@@ -356,7 +384,8 @@ function animate(){
 }
 try{
  animate();
- document.getElementById('loading').style.display='none';
+clearTimeout(window.loadTimeout);
+document.getElementById('loading').style.display='none';
 }catch(error){
  document.getElementById('loading').innerHTML='<span>Something went wrong loading the house. Please refresh. ♡</span>';
  console.error(error);
