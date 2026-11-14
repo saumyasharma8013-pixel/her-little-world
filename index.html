@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#f5e9ff">
-<title>A Little Place Called Yours ✿</title>
+<title>Your Little Place ✿</title>
 <style>
 :root{--ink:#554765;--muted:#897a98;--pink:#f6c9df;--lilac:#d9c8f4;--cream:#fff9ef;--mint:#cde9dc;--yellow:#ffe7a8;--shadow:0 18px 45px #725b8b20;--rx:60deg;--rz:-45deg}
 *{box-sizing:border-box}
@@ -31,8 +31,8 @@ main{max-width:1120px;margin:auto;padding:10px 22px 50px}
 .map-head h2{font:500 21px Georgia,serif;margin:0}
 .map-head small{color:#9b8ba4;font-size:11px}
 
-/* ---------- 3D stage ---------- */
-.stage{position:relative;height:var(--sh,560px);border-radius:24px;overflow:hidden;background:var(--bg,#efe6fb);border:1px solid #fff;touch-action:pan-y;user-select:none;-webkit-user-select:none;cursor:grab;animation:pop .4s ease}
+/* ---------- 3D stage (real perspective) ---------- */
+.stage{position:relative;height:var(--sh,560px);border-radius:24px;overflow:hidden;background:var(--bg,#efe6fb);border:1px solid #fff;perspective:1700px;perspective-origin:50% 35%;touch-action:pan-y;user-select:none;-webkit-user-select:none;cursor:grab;animation:pop .4s ease}
 .stage:active{cursor:grabbing}
 .stage.flash{animation:siren .5s 3}
 @keyframes siren{0%,100%{box-shadow:inset 0 0 0 #ff3b6b00}50%{box-shadow:inset 0 0 120px #ff3b6baa}}
@@ -84,7 +84,6 @@ main{max-width:1120px;margin:auto;padding:10px 22px 50px}
 .cur{position:absolute;top:-6px;bottom:-4px;width:24%;background:repeating-linear-gradient(90deg,#c7b2ec 0 6px,#b8a0e4 6px 12px);border-radius:0 0 12px 12px}
 .cur.l{left:-12%}.cur.r{right:-12%}
 .frame{width:100%;height:100%;border:4px solid #fff;outline:1px solid #0001;display:flex;align-items:center;justify-content:center;font:800 13px ui-rounded,sans-serif;color:#fffd;text-shadow:0 1px 2px #0003;box-shadow:0 2px 5px #0002}
-.vinyl{width:100%;height:100%;border-radius:50%;background:radial-gradient(circle,#f6c9df 0 22%,#3b3342 23% 25%,transparent 26%),repeating-radial-gradient(circle,#4a3f52 0 3px,#554a5e 3px 6px);border:4px solid #e8d8f4;display:flex;align-items:center;justify-content:center;color:#fff;font-size:20px;box-shadow:0 3px 8px #0003}
 .neon{font:800 22px/1 ui-rounded,sans-serif;color:#fff;text-align:center;text-shadow:0 0 4px #fff,0 0 10px #ff5fa3,0 0 22px #ff5fa3,0 0 34px #ff5fa3;border:3px solid #ff9ccc;border-radius:14px;width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#3b2a52;box-shadow:0 0 14px #ff5fa3aa,inset 0 0 12px #ff5fa377}
 .neon small{font-size:11px;letter-spacing:.2em;text-shadow:0 0 6px #7ee7ff;color:#d7f7ff}
 .sign{font:800 13px/1 Georgia,serif;color:#fff;background:#b79ae0;border-radius:6px;width:100%;height:100%;display:flex;align-items:center;justify-content:center;letter-spacing:.08em;border:3px solid #fff}
@@ -102,7 +101,8 @@ main{max-width:1120px;margin:auto;padding:10px 22px 50px}
 .chip:hover{background:#ffeaf4;transform:translateY(-2px)}
 .chip.on{background:#eaf8f0;border-color:#cfe9da}
 .chip.on:after{content:"✓";color:#4c9a75;font-weight:900}
-.room-nav{display:flex;justify-content:space-between;gap:10px;margin-top:14px;flex-wrap:wrap}
+.room-nav{display:flex;justify-content:space-between;gap:8px;margin-top:14px;flex-wrap:wrap}
+.room-nav .mid{display:flex;gap:8px}
 
 /* ---------- quest bar ---------- */
 .quest{padding:16px 20px}
@@ -153,7 +153,8 @@ footer button{border:0;background:none;color:#9b8ca3;text-decoration:underline;f
 @keyframes fall{to{transform:translate(var(--dx),110vh) rotate(var(--rot))}}
 @media(max-width:620px){
   .top{padding:16px 14px 4px}.hide-s{display:none}.hero{padding:14px 6px}
-  main{padding:8px 12px 40px}.card{border-radius:24px}
+  main{padding:6px 6px 40px}.card{border-radius:22px;padding:8px}.quest{padding:14px 16px}
+  .room-bar,.map-head,.room-nav,.roomlist{padding:0 6px}
   .members{grid-template-columns:repeat(2,1fr)}.dlg{align-items:flex-end;padding:0}
   .dlg-card{border-radius:26px 26px 0 0;max-height:82vh}.msg{font-size:16px}
   .room-title h2{font-size:24px}
@@ -164,13 +165,13 @@ footer button{border:0;background:none;color:#9b8ca3;text-decoration:underline;f
 <body>
 <header class="top">
   <div class="brand">✿ THE LITTLE INTERNET HOME</div>
-  <div class="top-r"><button class="pill btn" id="mute" aria-label="Toggle sound">🔊 sound on</button><div class="pill hide-s">made with an unreasonable amount of affection ♡</div></div>
+  <div class="top-r"><button class="pill btn" id="mute" aria-label="Toggle sound">🔊 sound on</button><div class="pill hide-s">made for you ♡</div></div>
 </header>
 <main>
 <section class="hero">
-  <div class="eyebrow">a tiny 3D universe, exclusively yours</div>
-  <h1>Welcome home,<br><i id="heroName">birthday girl.</i></h1>
-  <p>Your own little corner of the internet. Wander around, open things, bother the cats and please do not feed the emotional-support gremlin after midnight.</p>
+  <div class="eyebrow">your own little place</div>
+  <h1>Welcome back,<br><i id="heroName">friend.</i></h1>
+  <p>This is your corner of the internet. Look around, open things, say hi to the cats. Come by whenever you need a break. It'll be here.</p>
 </section>
 
 <section class="card" id="hubCard">
@@ -188,15 +189,15 @@ footer button{border:0;background:none;color:#9b8ca3;text-decoration:underline;f
   <div class="stage" id="roomStage"><div class="rot" id="roomRot"></div></div>
   <div class="caption" id="caption">tap anything that sparkles ✦ · drag the room to look around</div>
   <div class="chips" id="chips"></div>
-  <div class="room-nav"><button class="btn" id="prevRoom">← previous room</button><button class="btn" id="resetView">⟲ reset view</button><button class="btn" id="nextRoom">next room →</button></div>
+  <div class="room-nav"><button class="btn" id="prevRoom">← previous</button><span class="mid"><button class="btn" id="zoomOut" aria-label="Zoom out">－</button><button class="btn" id="zoomIn" aria-label="Zoom in">＋</button><button class="btn" id="resetView">⟲ reset</button></span><button class="btn" id="nextRoom">next →</button></div>
 </section>
 
 <section class="card quest">
-  <div class="quest-row"><span id="count">0 / 5 little places explored</span><span id="found">0 secrets found</span><button class="letter-btn" id="letter-btn" hidden>Open your birthday letter ✉</button></div>
-  <div class="progress"><div id="bar"></div></div><div class="progress-label">birthday quest progress</div>
+  <div class="quest-row"><span id="count">0 / 5 little places explored</span><span id="found">0 secrets found</span><button class="letter-btn" id="letter-btn" hidden>Open your letter ✉</button></div>
+  <div class="progress"><div id="bar"></div></div><div class="progress-label">exploring progress</div>
 </section>
 </main>
-<footer>built for one very specific human ♡ &nbsp;·&nbsp; no rent, no chores, unlimited cat energy &nbsp;·&nbsp; <button id="reset">forget my progress</button></footer>
+<footer>made for you ♡ &nbsp;·&nbsp; no rent, no chores, plenty of cats &nbsp;·&nbsp; <button id="reset">forget my progress</button></footer>
 
 <div class="dlg" id="dlg" hidden>
   <div class="dlg-card" id="dlgCard" role="dialog" aria-modal="true" aria-labelledby="dlgTitle">
@@ -211,12 +212,12 @@ footer button{border:0;background:none;color:#9b8ca3;text-decoration:underline;f
    ✿ EASY PERSONALISATION — edit this block, nothing else needed ✿
    ===================================================================== */
 const CONFIG={
-  friendName:"birthday girl",                 // shown in the big title
-  signOff:"your internet friend",             // end of the birthday letter
+  friendName:"friend",                        // shown in the big title (put her name here)
+  signOff:"your internet friend",             // end of the letter
   cats:["Chairman Meow","Sir Pounce-a-lot"],  // rename the cats (her real cats' names?)
-  bias:"",                                    // e.g. "Felix" to crown her Stray Kids bias
+  bias:"",                                    // e.g. "Felix" to mark her Stray Kids bias
   skzSongUrl:"",                              // link to her favourite SKZ song (YouTube/Spotify)
-  playlistUrl:""                              // link to the playlist you make for her
+  playlistUrl:""                              // link to a playlist (the aux cord button shows up once this is filled in)
 };
 
 /* ---------- tiny helpers ---------- */
@@ -232,138 +233,136 @@ const fl=(x,y,w,d,bg,o={})=>({t:'flat',x,y,w,d,bg,...o});
 const bb=(x,y,e,s,i,o={})=>({t:'bb',x,y,e,s,i,...o});
 const wd=(wall,l,tp,w,h,html,o={})=>({t:'wall',wall,l,tp,w,h,html,...o});
 const WIN=()=>`<div class="win"><i class="cur l"></i><i class="cur r"></i></div>`;
-const LIGHTS=(l,w)=>wd('A',l,8,w,22,'<div class="lights"></div>',{plain:1});
+const LIGHTS=(l,w)=>wd('A',l,8,w,22,'<div class="lights"></div>',{plain:1,hi:1});
 const FRAMES=["#8fb8f5","#f2a3c2","#a996d7","#86d0b4","#f6c28a","#e98fa0","#7fc9e0","#c4a2e8"];
 const MEMBERS=[
- ["Bang Chan","BC","Leader","The leader. Producer. Parent of the group chat. Has definitely reminded someone to drink water today."],
- ["Lee Know","LK","Dancer","A dancer with certified cat-dad credentials. Cat HQ sends its regards and a respectful nod."],
- ["Changbin","CB","Rapper","Rapper, producer, powerhouse. Do not underestimate the cuddly ones."],
- ["Hyunjin","HJ","Dancer","Dancer, artist and professional main character. Looks like a painting, and paints too."],
- ["Han","HAN","Rapper","Rapper, producer, vocalist and resident chaos engine. Three-in-one, fully caffeinated."],
- ["Felix","FX","Dancer","The voice that drops an octave and takes your soul with it. Sunshine, but in surround sound."],
- ["Seungmin","SM","Vocalist","A voice like a warm blanket with a plot. Soft power at its finest."],
- ["I.N","IN","Maknae","The youngest, and the loudest 'aww' in any room. Maknae privileges: fully enforced."]
+ ["Bang Chan","BC","Leader","The leader and producer. Probably reminding someone to drink water right now."],
+ ["Lee Know","LK","Dancer","Dancer, and a proud cat dad. Cat HQ sends its regards."],
+ ["Changbin","CB","Rapper","Rapper and producer. Looks tough, is a total softie."],
+ ["Hyunjin","HJ","Dancer","Dancer and artist. Looks like a painting, and paints too."],
+ ["Han","HAN","Rapper","Rapper, producer and vocalist. Pure chaos, in the best way."],
+ ["Felix","FX","Dancer","That deep voice, that sunshine smile. Hard to beat."],
+ ["Seungmin","SM","Vocalist","A warm, steady voice that sneaks up on you."],
+ ["I.N","IN","Maknae","The youngest, and everyone's favourite. Maknae privileges apply."]
 ];
 
 /* ---------- the five rooms ---------- */
 const ROOMS={
-nap:{name:"The Nap Zone",ic:"🛏️",sub:"Blankets, comfort and absolutely no productivity.",
- theme:{wall:"#f8d9e6",trim:"#ecb9ce",floor:"#d9a77f",line:"#c58f68",H:170,bg:"linear-gradient(160deg,#fde7f1,#ece4fb)"},
+nap:{name:"The Nap Zone",ic:"🛏️",sub:"Blankets, soft light and nothing to do.",
+ theme:{wall:"#f8d9e6",trim:"#ecb9ce",floor:"#d9a77f",line:"#c58f68",H:200,bg:"linear-gradient(160deg,#fde7f1,#ece4fb)"},
  decor:[
   fl(110,150,230,230,"radial-gradient(circle,#fff8 0 16%,transparent 17%),repeating-radial-gradient(circle,#ead7f6 0 16px,#f5e6fb 16px 32px)",{r:"50%",z:.8}),
   LIGHTS(8,380),
   bb(30,382,0,40,"🪴"),bb(300,330,0,26,"🧦")
  ],
  items:[
-  {id:"bed",ic:"🛏️",name:"The cloud bed",sub:"Where plans go to die peacefully.",text:"Scientific fact: 87% of problems look smaller from a horizontal position. The other 13% also look smaller, they're just louder about it.",parts:[
+  {id:"bed",ic:"🛏️",name:"The cloud bed",sub:"Plans can wait.",text:"Nothing needs fixing right now. Get under the blanket, take a breath, and stay as long as you like.",parts:[
     bx(20,16,180,128,24,"#e9b8cf"),bx(20,10,180,10,78,"#d99ab9",{noshadow:1}),
     bx(25,22,170,118,12,"#ffffff",{z:24,noshadow:1,top:"#fffafc"}),
     bx(25,66,170,74,6,"#c9b3ee",{z:36,noshadow:1,top:"repeating-linear-gradient(45deg,#cdb8f0 0 12px,#dccbf7 12px 24px)"}),
     bx(34,28,58,34,9,"#ffffff",{z:36,noshadow:1}),bx(100,28,58,34,9,"#ffffff",{z:36,noshadow:1})]},
-  {id:"plush",ic:"🧸",name:"The emotional support plushie",sub:"Click for a highly qualified life assessment.",text:"You are doing better than you think. The plushie has reviewed the evidence and is proud of you. It also requests a tiny hat.",parts:[bb(160,76,42,42,"🧸")]},
-  {id:"window",ic:"🪟",name:"The window seat",sub:"A little reminder for cloudy days.",text:"You don't have to turn every day into a masterpiece. Some days are just for existing, breathing and watching the sky change colour.",parts:[
+  {id:"plush",ic:"🧸",name:"The emotional support plushie",sub:"Tap for a hug.",text:"You're doing better than you think. Seriously. Take the win, and maybe call it a day.",parts:[bb(160,76,42,42,"🧸")]},
+  {id:"window",ic:"🪟",name:"The window seat",sub:"Just watch the sky for a bit.",text:"You don't have to make every day count. Some days it's enough to sit here and watch the light change.",parts:[
     wd("A",258,32,110,88,WIN()),bx(250,14,126,44,26,"#cfe9dc",{top:"#f7d6e6"}),bb(300,40,26,34,"🐈")]},
-  {id:"diary",ic:"📖",name:"The suspicious diary",sub:"Definitely not judging your life choices.",text:"Today's entry: main character is iconic, slightly sleep-deprived, and deserves a treat. Further research is required.",parts:[
+  {id:"diary",ic:"📖",name:"The diary",sub:"Your private page.",text:"No pressure to write anything. If you want to, though: what's one small thing that went okay today?",parts:[
     bx(208,16,34,34,34,"#e9c0a2"),bb(225,34,34,30,"📖")]},
-  {id:"drawer",ic:"🎁",name:"The mystery drawer",sub:"A tiny birthday secret.",kind:"gift",text:"SURPRISE. You are officially allowed to romanticise the little things today. Especially dessert. Especially a second dessert.",parts:[
+  {id:"drawer",ic:"🎁",name:"The mystery drawer",sub:"A little something.",kind:"gift",text:"Nothing fancy in here. Just a reminder that the small stuff counts. Go get yourself something nice. Dessert counts.",parts:[
     bx(346,150,50,100,58,"#f0c9a8",{lh:'<b class="drawers"></b>'}),bb(372,200,58,40,"🎁")]},
-  {id:"poster",ic:"🖼️",name:"The motivational poster",sub:"Honest advice, framed.",text:"Motivational poster, but honest. You are legally allowed to lie down. Doctors (imaginary) strongly recommend it.",parts:[
+  {id:"poster",ic:"🖼️",name:"The motivational poster",sub:"Honest advice.",text:"Live, laugh, lie down. Rest isn't something you have to earn.",parts:[
     wd("B",60,36,72,98,'<div class="poster">LIVE.<br>LAUGH.<br><b>LIE DOWN.</b></div>')]}
  ]},
 
-sound:{name:"The Sound Room",ic:"🎧",sub:"For dramatic entrances, kitchen concerts and emotional damage.",
- theme:{wall:"#cfe8dc",trim:"#a9d3c0",floor:"#d6a77d",line:"#bd8d65",H:170,bg:"linear-gradient(160deg,#e3f6ec,#efe6fb)"},
+sound:{name:"The Sound Room",ic:"🎧",sub:"Music, books and a spot to sing badly.",
+ theme:{wall:"#cfe8dc",trim:"#a9d3c0",floor:"#d6a77d",line:"#bd8d65",H:200,bg:"linear-gradient(160deg,#e3f6ec,#efe6fb)"},
  decor:[
   fl(80,10,280,280,"conic-gradient(#f9d5e5 0 25%,#d9e8f6 0 50%,#f6edc4 0 75%,#e3d5f4 0)",{r:"50%",z:.8}),
   LIGHTS(14,300),bb(30,386,0,40,"🪴"),bb(384,372,0,30,"🌿")
  ],
  items:[
-  {id:"shelf",ic:"📚",name:"The corner library",sub:"Books, plants and unread notifications.",text:"Half of these are books you've read. The other half are books you fully intend to read. The shelf doesn't judge. The shelf is wood.",parts:[
+  {id:"shelf",ic:"📚",name:"The corner library",sub:"Books and plants.",text:"Some of these you've read. Some you swear you'll get to. Nobody's keeping score.",parts:[
     bx(318,6,78,34,120,"#e3b78c",{rh:'<b class="shelf"></b>'}),bx(362,40,34,90,120,"#e3b78c",{lh:'<b class="shelf"></b>'}),bb(338,24,120,34,"🪴")]},
-  {id:"piano",ic:"🎹",name:"The grand piano",sub:"Press for a tiny concert.",kind:"play",text:"A tiny piano just played something you may recognise. Standing ovation. Please hold your applause until after the cake.",parts:[
+  {id:"piano",ic:"🎹",name:"The grand piano",sub:"Tap to hear a little tune.",kind:"play",text:"Just a quiet tune to keep you company. Stay as long as you like.",parts:[
     bx(150,70,132,90,32,"#f7eedd",{z:12,rh:'<div class="keys"></div>'}),
     bx(154,74,7,7,12,"#cdb894",{noshadow:1}),bx(272,74,7,7,12,"#cdb894",{noshadow:1}),bx(154,152,7,7,12,"#cdb894",{noshadow:1}),bx(272,152,7,7,12,"#cdb894",{noshadow:1}),
     bx(156,76,120,40,5,"#efe2cb",{z:44,noshadow:1}),bx(190,180,52,26,16,"#fbe8d0",{top:"#f4b4cb"}),bb(216,112,49,26,"🎼")]},
-  {id:"armchair",ic:"🛋️",name:"The listening chair",sub:"Reserved for dramatic listening.",text:"Official rules: one headphone in, one eye closed, one dramatic stare out of a window while the chorus hits. Tea optional, feelings mandatory.",parts:[
+  {id:"armchair",ic:"🛋️",name:"The listening chair",sub:"The best seat for music.",text:"Headphones on, tea nearby, one song on repeat. That's the whole plan.",parts:[
     bx(34,150,64,66,22,"#f4b9cc"),bx(34,150,16,66,58,"#eea6bd",{noshadow:1}),bx(50,150,48,10,36,"#ee9fb8",{noshadow:1}),bx(50,206,48,10,36,"#ee9fb8",{noshadow:1}),
     bx(58,170,26,26,5,"#cfe4f6",{z:22,noshadow:1}),bx(110,196,26,26,30,"#e8c39e"),bb(123,209,30,22,"☕")]},
-  {id:"drums",ic:"🥁",name:"The drum kit",sub:"Neighbours not included.",text:"Drum solo in progress: ba-dum-tss. Please enjoy responsibly and never, ever ask the neighbours' opinion.",parts:[
+  {id:"drums",ic:"🥁",name:"The drum kit",sub:"Neighbours not included.",text:"Go ahead, make some noise. Nobody's here to complain.",parts:[
     fl(286,220,96,96,"#e3d5f4",{r:"50%",z:1}),bb(334,274,0,70,"🥁")]},
-  {id:"guitar",ic:"🎸",name:"The guitar",sub:"Three chords and the truth. Or four chords and vibes.",text:"Technically it's decor. Spiritually it's a rock star. It has been leaning on that wall waiting for the right song.",parts:[bb(62,58,0,58,"🎸")]},
-  {id:"speaker",ic:"🎵",name:"The aux cord",sub:"A very important responsibility.",link:"playlist",linkText:"Open her playlist ↗",text:"You have full aux privileges. Use them wisely. Or don't. The council has no authority here.",parts:[
+  {id:"guitar",ic:"🎸",name:"The guitar",sub:"Always ready.",text:"It's mostly for show, but it's been waiting by the wall for the right song.",parts:[bb(62,58,0,58,"🎸")]},
+  {id:"speaker",ic:"🎵",name:"The aux cord",sub:"You pick the music.",link:"playlist",linkText:"Open the playlist ↗",text:"You've got the aux. Play whatever you're in the mood for.",parts:[
     bx(104,14,46,28,34,"#8a7a86",{rh:'<b class="spk"></b>'}),bb(127,28,34,26,"📻")]},
-  {id:"skz",ic:"⭐",name:"The SKZ shrine",sub:"A respectful amount of fan behaviour.",kind:"members",link:"skz",linkText:"Play her favourite SKZ song ↗",text:"Stray Kids on the speakers, the world on mute. Eight frames, zero chill. Pick a member.",
+  {id:"skz",ic:"⭐",name:"The SKZ shrine",sub:"Eight frames, pick one.",kind:"members",link:"skz",linkText:"Play her favourite SKZ song ↗",text:"Stray Kids on the speakers and the rest of the world on mute. Pick a member.",
    parts:MEMBERS.map((m,i)=>wd("A",12+(i%4)*50,24+((i/4)|0)*66,42,54,`<div class="frame" style="background:linear-gradient(145deg,${FRAMES[i]},${shade(FRAMES[i],-.15)})">${m[1]}</div>`))},
-  {id:"mixtape",ic:"💿",name:"The mixtape",sub:"A song-shaped hug.",link:"playlist",linkText:"Press play ↗",text:"A little playlist of songs that remind me of you. A soundtrack for the next chapter. Press play, close your eyes and let it be loud.",parts:[
-    wd("B",286,30,84,84,'<div class="vinyl">♪</div>')]},
-  {id:"windowcat",ic:"🐈",name:"The window-seat cat",sub:"A cat-in-residence, thoughtfully provided.",text:"This cat arrived uninvited, stayed for the sunbeam, and has refused to leave. Rent is paid in blinks.",parts:[
+  {id:"windowcat",ic:"🐈",name:"The window-seat cat",sub:"Here for the sunbeam.",text:"Showed up one day, claimed the sunbeam, and never left. Rent is paid in slow blinks.",parts:[
     wd("B",146,38,106,88,WIN()),bx(364,146,34,112,24,"#d9ecf8",{top:"#f6d3e1"}),bb(381,206,24,38,"🐈")]},
-  {id:"stage",ic:"🎤",name:"The tiny stage",sub:"Go on. Nobody is recording. Probably.",text:"Tonight's performance review: 10/10 stage presence, 0/10 concern for the neighbours. Encore. ENCORE.",parts:[
+  {id:"stage",ic:"🎤",name:"The tiny stage",sub:"Nobody's watching.",text:"Sing like no one's listening. They aren't. Go for it.",parts:[
     bx(78,248,96,72,12,"#cdb7ee",{top:"repeating-linear-gradient(90deg,#d8c7f5 0 14px,#cdb7ee 14px 28px)"}),bb(126,292,12,42,"🎤")]}
  ]},
 
 cats:{name:"Cat HQ",ic:"🐈",sub:"They pay no rent and have several demands.",
- theme:{wall:"#e3d9f6",trim:"#cdbbec",floor:"#dcae86",line:"#c4946d",H:170,bg:"linear-gradient(160deg,#ece4fb,#e1f4ea)"},
+ theme:{wall:"#e3d9f6",trim:"#cdbbec",floor:"#dcae86",line:"#c4946d",H:200,bg:"linear-gradient(160deg,#ece4fb,#e1f4ea)"},
  decor:[
   fl(80,150,250,250,"radial-gradient(circle,#fff9 0 14%,transparent 15%),repeating-radial-gradient(circle,#f8dff0 0 18px,#fdeaf6 18px 36px)",{r:"50%",z:.8}),
   wd("A",150,34,108,84,WIN(),{plain:1}),wd("B",290,40,100,40,'<div class="sign">CATNIP CAFÉ</div>',{plain:1}),
   bb(30,384,0,36,"🪴"),bb(250,350,0,24,"🐁")
  ],
  items:[
-  {id:"chairman",ic:"🐈",name:CONFIG.cats[0],sub:"Head of unsolicited opinions.",kind:"pet",text:"I have observed your behaviour. It is acceptable. You may continue being my favourite human. Bring snacks.",parts:[
+  {id:"chairman",ic:"🐈",name:CONFIG.cats[0],sub:"Has opinions on everything.",kind:"pet",text:"I've been watching you. You're fine. You can stay. Bring snacks next time.",parts:[
     bx(288,64,72,72,18,"#c9a888"),bx(316,92,16,16,80,"#ead6b8",{z:18,noshadow:1,lbg:"repeating-linear-gradient(to bottom,#d9bf99 0 5px,#ead6b8 5px 10px)",rbg:"repeating-linear-gradient(to bottom,#c9ac84 0 5px,#dcc6a3 5px 10px)"}),
     bx(282,58,84,84,8,"#c8a0e0",{z:98,noshadow:1}),bb(324,100,106,48,"🐈")]},
-  {id:"pounce",ic:"🐈‍⬛",name:CONFIG.cats[1],sub:"Senior chaos consultant.",kind:"pet",text:"Have you considered simply lying down dramatically until the problem resolves itself? No? Amateur.",parts:[
+  {id:"pounce",ic:"🐈‍⬛",name:CONFIG.cats[1],sub:"Chief nap supervisor.",kind:"pet",text:"Have you tried just lying down and ignoring it? Works every time.",parts:[
     bx(196,10,86,40,52,"#a98dc9"),bb(238,32,52,42,"🐈‍⬛")]},
-  {id:"adoption",ic:"🐾",name:"The adoption papers",sub:"You have been selected. There was no interview.",text:"Congratulations. You are now legally responsible for one imaginary cat. Benefits include purring, judgement and occasional zoomies.",parts:[
+  {id:"adoption",ic:"🐾",name:"The adoption papers",sub:"No interview needed.",text:"Congrats, you've been picked. One imaginary cat is now yours. Expect purring, judgement and the occasional zoomies.",parts:[
     bx(26,10,100,52,36,"#e4c4a0"),bb(76,40,36,34,"📜")]},
-  {id:"snack",ic:"🥛",name:"The snack cupboard",sub:"A message from the feline union.",text:"The cats would like to remind you that you deserve nice things, regular breaks and a little treat. They are experts in all three.",parts:[
+  {id:"snack",ic:"🥛",name:"The snack cupboard",sub:"A note from the cats.",text:"The cats want you to know you deserve a break, a snack and something nice. They'd know.",parts:[
     bx(352,170,46,112,72,"#cde9dc",{lh:'<b class="cup"></b>'}),bb(375,204,72,30,"🥛"),bb(375,252,72,26,"🐟")]},
-  {id:"yarn",ic:"🧶",name:"The yarn ball",sub:"Do not roll. (Roll it.)",kind:"yarn",text:"The cats are watching you. Closely. Roll it, and see what happens.",parts:[
+  {id:"yarn",ic:"🧶",name:"The yarn ball",sub:"Go on, roll it.",kind:"yarn",text:"The cats are watching. Roll it and see what happens.",parts:[
     fl(120,272,110,110,"radial-gradient(circle,#f6b3cf,#f3a0c3)",{r:"50%",z:1.2}),bb(176,334,0,40,"🧶")]}
  ]},
 
-chaos:{name:"The Chaos Den",ic:"🪦",sub:"Nothing to see here. Please ignore the tiny warning signs.",
- theme:{wall:"#9a86bb",trim:"#7a679d",floor:"#a98595",line:"#8f6c7c",H:170,bg:"linear-gradient(160deg,#cdbfe6,#efd2e4)"},
+chaos:{name:"The Chaos Den",ic:"🪦",sub:"A bit messy, a bit silly. Ignore the warning signs.",
+ theme:{wall:"#9a86bb",trim:"#7a679d",floor:"#a98595",line:"#8f6c7c",H:200,bg:"linear-gradient(160deg,#cdbfe6,#efd2e4)"},
  decor:[
   fl(14,232,190,168,"radial-gradient(circle,#ffffff14 0 2px,transparent 3px) 0 0/16px 16px,#7d6a7d",{r:"22px",z:.8}),
-  wd("A",330,8,56,56,'<span style="font-size:48px">🕸️</span>',{plain:1}),wd("B",20,26,42,40,'<span style="font-size:34px">🦇</span>',{plain:1}),
+  wd("A",330,8,56,56,'<span style="font-size:48px">🕸️</span>',{plain:1,hi:1}),wd("B",20,26,42,40,'<span style="font-size:34px">🦇</span>',{plain:1,hi:1}),
   bb(150,332,0,28,"🕯️"),bb(120,380,0,26,"🥀"),bb(30,150,0,34,"💀")
  ],
  items:[
-  {id:"graveyard",ic:"🪦",name:"The graveyard of bad decisions",sub:"Pay your respects.",text:"Here lies the plan to have a normal sleep schedule. Gone but never particularly present. Survived by 47 open tabs.",parts:[
+  {id:"graveyard",ic:"🪦",name:"The graveyard of bad decisions",sub:"Pay your respects.",text:"Here lies the plan to sleep at a normal time. Survived by 47 open tabs.",parts:[
     bx(32,262,44,12,52,"#d8d2e0",{top:"#ece7f2",rh:'<div class="rip">R.I.P.<br>sleep<br>schedule</div>'}),
     bx(94,298,44,12,44,"#d8d2e0",{top:"#ece7f2",rh:'<div class="rip">R.I.P.<br>social<br>battery</div>'}),
     bx(54,340,44,12,56,"#d8d2e0",{top:"#ece7f2",rh:'<div class="rip">R.I.P.<br>"I\'ll start<br>Monday"</div>'})]},
-  {id:"complaint",ic:"📢",name:"The complaint department",sub:"Press to file a deeply unserious grievance.",kind:"complaint",text:"Open since forever. Staffed by nobody. Please state your grievance below.",parts:[
+  {id:"complaint",ic:"📢",name:"The complaint department",sub:"File a very unserious complaint.",kind:"complaint",text:"Open since forever, staffed by no one. Type your complaint below.",parts:[
     bx(150,10,112,52,38,"#7b659a"),bb(192,42,38,38,"📢"),bb(238,46,38,28,"🛎️")]},
-  {id:"award",ic:"🏆",name:"The award ceremony",sub:"An award chosen by a very biased committee.",kind:"gift",text:"Awarded: Outstanding Achievement in Being A Whole Person While Life Keeps Adding Side Quests. Prize: imaginary trophy and unlimited bragging rights.",parts:[
+  {id:"award",ic:"🏆",name:"The award ceremony",sub:"Chosen by a very biased committee.",kind:"gift",text:"This award goes to you, for being a whole person while life keeps adding side quests. Prize: an imaginary trophy and bragging rights.",parts:[
     bx(280,200,40,44,34,"#d9dbe8",{rh:'<div class="podium">2</div>'}),bx(320,200,40,44,48,"#ffd98a",{rh:'<div class="podium">1</div>'}),bx(360,200,38,44,24,"#f0b48f",{rh:'<div class="podium">3</div>'}),bb(340,224,48,46,"🏆")]},
-  {id:"button",ic:"🧯",name:"The emergency button",sub:"For emergencies of the silly variety.",kind:"siren",text:"🚨 ALERT: You are too iconic to be this stressed. Please hydrate, unclench your jaw and acquire a snack immediately.",parts:[
+  {id:"button",ic:"🧯",name:"The emergency button",sub:"For silly emergencies.",kind:"siren",text:"🚨 You're doing a lot. Drink some water, unclench your jaw and go find a snack.",parts:[
     bx(228,300,40,40,26,"#d9d9e6"),bx(237,309,22,22,10,"#ff6b8b",{z:26,noshadow:1,top:"radial-gradient(circle,#ff9db5,#ff4f78)"}),bb(248,322,36,34,"🚨")]},
-  {id:"tabs",ic:"🖥️",name:"The doomscroll station",sub:"47 open tabs and counting.",text:"Tab 12 is playing music from somewhere. Tab 31 is a recipe you will never cook. Tab 40 is a very serious article you opened in 2023. Nobody is brave enough to close the browser.",parts:[
+  {id:"tabs",ic:"🖥️",name:"The doomscroll station",sub:"47 tabs open.",text:"One tab is playing music from somewhere. One is a recipe you'll never make. Nobody's brave enough to close the browser.",parts:[
     bx(20,10,110,52,36,"#5f4b78"),bb(75,42,36,56,"🖥️")]},
-  {id:"coffin",ic:"⚰️",name:"The nap pod",sub:"Technically a coffin. Spiritually a hammock.",text:"Dracula called, he wants his sleep schedule back. The pod is lined with velvet, vibes and one (1) suspiciously comfy pillow. Power naps only. Do not resurrect before noon.",parts:[
+  {id:"coffin",ic:"⚰️",name:"The nap pod",sub:"A coffin, technically. A hammock, spiritually.",text:"Velvet, quiet and one very good pillow. Perfect for a quick nap. Just don't expect to be up before noon.",parts:[
     bx(152,186,60,114,20,"#6b4f62"),bx(157,192,50,102,4,"#f3d9e6",{z:20,noshadow:1}),bx(162,196,40,26,7,"#ffffff",{z:24,noshadow:1})]},
-  {id:"neon",ic:"💡",name:"The neon sign",sub:"A message to the universe.",text:"The Grim Reaper has been informed that you're fully booked until at least 2090. Please leave a message after the tone. (There is no tone.)",parts:[
+  {id:"neon",ic:"💡",name:"The neon sign",sub:"A message for the universe.",text:"Not today, Grim Reaper. Leave a message after the tone. (There's no tone.)",parts:[
     wd("B",140,38,152,62,'<div class="neon">NOT TODAY<small>GRIM REAPER</small></div>')]}
  ]},
 
-roof:{name:"The Rooftop",ic:"🌙",sub:"A quiet corner to make a wish.",
+roof:{name:"The Rooftop",ic:"🌙",sub:"A quiet spot under the stars.",
  theme:{wall:"#a9b2e0",trim:"#8d96cc",floor:"#7f88b9",line:"#6f78aa",H:34,deck:1,bg:"radial-gradient(circle at 18% 14%,#fff 0 1.5px,transparent 2px),radial-gradient(circle at 70% 9%,#fff 0 1.5px,transparent 2px),radial-gradient(circle at 42% 22%,#fff 0 1px,transparent 2px),radial-gradient(circle at 88% 28%,#fff 0 1.5px,transparent 2px),radial-gradient(circle at 8% 40%,#fff 0 1px,transparent 2px),radial-gradient(circle at 56% 6%,#fff 0 1px,transparent 2px),linear-gradient(#2b2755,#5b4c95 62%,#d98fb8)"},
  decor:[
   bx(296,96,56,56,20,"#c9b3ee",{top:"#dccbf7"}),bx(250,60,50,50,18,"#f6c9df",{top:"#fad9e8"}),
   bb(30,384,0,40,"🪴"),bb(384,380,0,34,"🌸"),bb(330,40,205,62,"🌙",{cls:"float",sh:false})
  ],
  items:[
-  {id:"cake",ic:"🎂",name:"The birthday cake",sub:"Make a wish. The candles are listening.",kind:"cake",text:"Close your eyes and make a wish that is just for you. Not the sensible wish. The big, ridiculous, wonderful one.",parts:[
+  {id:"cake",ic:"🎂",name:"The wish cake",sub:"Make a wish.",kind:"cake",text:"Close your eyes and make a wish that's just for you. Skip the sensible one and go for the big, ridiculous one.",parts:[
     bx(168,148,76,76,40,"#f5d9ee",{top:"#fff0f8"}),bb(206,188,40,54,"🎂")]},
-  {id:"star",ic:"🌠",name:"The shooting star",sub:"A tiny reminder.",kind:"wish",text:"I hope the coming year surprises you in the loveliest ways. I hope you find new favourite things and keep the old ones that make you feel like yourself.",parts:[
+  {id:"star",ic:"🌠",name:"The shooting star",sub:"A little wish.",kind:"wish",text:"I hope the year ahead surprises you in good ways, and that you hold on to the things that make you feel like yourself.",parts:[
     bb(110,70,170,46,"🌠",{cls:"float",sh:false})]},
-  {id:"telescope",ic:"🔭",name:"The telescope",sub:"For staring at things far away.",text:"Pointed at the moon. The moon says hi, and also that you should drink some water.",parts:[bb(74,216,0,62,"🔭")]},
-  {id:"picnic",ic:"🧁",name:"The midnight feast",sub:"Snacks. For emotional support.",text:"Official statement from the Dessert Committee: you are allowed a second dessert, a third snack and a fourth 'just one more bite'. The committee has spoken.",parts:[
+  {id:"telescope",ic:"🔭",name:"The telescope",sub:"For looking far away.",text:"Pointed at the moon. The moon says hi, and that you should drink some water.",parts:[bb(74,216,0,62,"🔭")]},
+  {id:"picnic",ic:"🧁",name:"The midnight feast",sub:"Snacks for the soul.",text:"You're allowed a second dessert, a third snack and one more bite. The committee has spoken.",parts:[
     fl(30,286,130,96,"repeating-conic-gradient(#ffd6e3 0 25%,#fff 0 50%) 0 0/26px 26px",{r:"8px",z:1}),bb(62,340,0,32,"🧁"),bb(104,356,0,28,"🍓"),bb(120,318,0,32,"🧋")]},
-  {id:"envelope",ic:"💌",name:"The final envelope",sub:"A note that was waiting just for you.",kind:"letter",text:"Your birthday letter is almost ready. Keep exploring every little place and it will unlock.",parts:[
+  {id:"envelope",ic:"💌",name:"The final envelope",sub:"A note for you.",kind:"letter",text:"Your letter is almost ready. Visit every room and it'll open.",parts:[
     bx(312,262,44,44,30,"#ffffff"),bb(334,286,30,46,"💌")]}
  ]}
 };
@@ -394,6 +393,7 @@ function mkBB(p){
 function buildRoom(key,opts={}){
   const def=ROOMS[key],T=def.theme,mini=!!opts.mini,inter=!!opts.interactive;
   const H=mini?Math.round(T.H*(T.H<60?1:.6)):T.H;
+  const off=T.H>60?T.H-170:0; /* taller walls: shift wall decor down so it stays at eye level */
   const root=el("div","room",`width:${W}px;height:${D}px`);
   root.append(mkBox({x:0,y:0,w:W,d:D,h:18,z:-18,c:T.slab||"#e8cdb0",top:"transparent",noshadow:1}));
   const floorBg=T.deck?`linear-gradient(90deg,${T.line} 2px,transparent 2px) 0 0/50px 50px,linear-gradient(${T.line} 2px,transparent 2px) 0 0/50px 50px,linear-gradient(135deg,#ffffff22,transparent 60%),${T.floor}`
@@ -411,10 +411,11 @@ function buildRoom(key,opts={}){
     else if(p.t==="bb"){mkBB(p).forEach(e=>(g||root).append(e));cand(p.x,p.y,(p.e||0)+p.s)}
     else if(p.t==="wall"){
       if(mini)return;
-      const d=el("div","deco"+(p.cls?" "+p.cls:""),`left:${p.l}px;top:${p.tp}px;width:${p.w}px;height:${p.h}px;${p.css||""}`,p.html);
+      const o=p.hi?0:off,tp=p.tp+o;
+      const d=el("div","deco"+(p.cls?" "+p.cls:""),`left:${p.l}px;top:${tp}px;width:${p.w}px;height:${p.h}px;${p.css||""}`,p.html);
       if(inter&&it&&!p.plain)d.dataset.item=it.id;
       (p.wall==="A"?faceA:faceB).append(d);
-      const top=H-p.tp;
+      const top=H-tp;
       if(p.wall==="A")cand(p.l+p.w/2,26,top+6);else cand(W-26,p.l+p.w/2,top+6);
     }
   };
@@ -459,18 +460,18 @@ let state={found:{},visited:{},muted:false};
 try{const s=JSON.parse(localStorage.getItem(KEY)||"null");if(s&&typeof s==="object")state={found:s.found||{},visited:s.visited||{},muted:!!s.muted}}catch(e){}
 function save(){try{localStorage.setItem(KEY,JSON.stringify(state))}catch(e){}}
 const roomFound=k=>ROOMS[k].items.filter(i=>state.found[i.id]).length;
-const foundTotal=()=>Object.keys(state.found).length;
+const foundTotal=()=>ORDER.reduce((n,k)=>n+roomFound(k),0);
 const visitedN=()=>ORDER.filter(k=>state.visited[k]).length;
 
 /* ---------- view control ---------- */
 const tilt={rx:60,rz:-45};
+let zoom=1;
 function applyTilt(){const r=document.documentElement.style;r.setProperty("--rx",tilt.rx+"deg");r.setProperty("--rz",tilt.rz+"deg")}
 function fit(){
-  const hs=$("#hubStage"),rs=$("#roomStage");
-  [[hs,{w:700,h:640,cy:.66,box:HUB,max:1}],[rs,{w:640,h:600,cy:.62,box:W}]].forEach(([st,c])=>{
-    const cw=st.clientWidth||st.parentElement.clientWidth-30;
-    const s=clamp(cw/c.w,.42,c.max||1.12);
-    st.style.setProperty("--s",s.toFixed(3));st.style.setProperty("--cy",(c.cy*100)+"%");
+  [[$("#hubStage"),{w:700,h:640,cy:.66,box:HUB,max:1,z:1}],[$("#roomStage"),{w:540,h:640,cy:.6,box:W,max:1.25,z:zoom}]].forEach(([st,c])=>{
+    const cw=st.clientWidth||st.parentElement.clientWidth-16;
+    const s=clamp(cw/c.w,.42,c.max);
+    st.style.setProperty("--s",(s*c.z).toFixed(3));st.style.setProperty("--cy",(c.cy*100)+"%");
     st.style.setProperty("--sh",Math.round(c.h*s)+"px");
     const r=st.querySelector(".rot");r.style.width=r.style.height=c.box+"px";r.style.marginLeft=r.style.marginTop=(-c.box/2)+"px";
   });
@@ -510,7 +511,7 @@ function enterRoom(k){
   st.style.animation="none";void st.offsetWidth;st.style.animation="";
   fit();refresh();
   $("#roomCard").scrollIntoView({behavior:"smooth",block:"start"});
-  if(wasNew&&visitedN()===5){setTimeout(()=>{toast("All five spaces explored! Your birthday letter is ready ✨");confetti(70)},500)}
+  if(wasNew&&visitedN()===5){setTimeout(()=>{toast("You've seen every room. There's a note waiting for you ✨");confetti(70)},500)}
 }
 
 /* ---------- audio (tiny WebAudio, only on click) ---------- */
@@ -518,9 +519,10 @@ let ac=null;
 function ctx(){if(state.muted)return null;try{ac=ac||new (window.AudioContext||window.webkitAudioContext)();if(ac.state==="suspended")ac.resume();return ac}catch(e){return null}}
 function tone(f,t,dur,type="triangle",vol=.13){const a=ctx();if(!a)return;const o=a.createOscillator(),g=a.createGain();o.type=type;o.frequency.value=f;g.gain.setValueAtTime(0,a.currentTime+t);g.gain.linearRampToValueAtTime(vol,a.currentTime+t+.02);g.gain.exponentialRampToValueAtTime(.0001,a.currentTime+t+dur);o.connect(g).connect(a.destination);o.start(a.currentTime+t);o.stop(a.currentTime+t+dur+.05)}
 const N={G4:392,A4:440,B4:493.9,C5:523.3,D5:587.3,E5:659.3,F5:698.5,G5:784};
-function playBirthday(){
-  const s=[["G4",.75],["G4",.25],["A4",1],["G4",1],["C5",1],["B4",2],["G4",.75],["G4",.25],["A4",1],["G4",1],["D5",1],["C5",2],["G4",.75],["G4",.25],["G5",1],["E5",1],["C5",1],["B4",1],["A4",1],["F5",.75],["F5",.25],["E5",1],["C5",1],["D5",1],["C5",2]];
-  let t=0;s.forEach(([n,b])=>{tone(N[n],t,b*.34+.1);t+=b*.36});
+/* a short, gentle tune (not Happy Birthday) */
+function playTune(){
+  const s=[["C5",1],["E5",1],["G5",1.5],["E5",.5],["D5",1],["C5",1],["D5",1],["E5",2],["G4",1],["A4",1],["C5",1],["D5",1],["C5",3]];
+  let t=0;s.forEach(([n,b])=>{tone(N[n],t,b*.34+.12);t+=b*.38});
 }
 function chime(){const p=[523,587,659,784,880];tone(p[Math.floor(Math.random()*5)],0,.35,"sine",.09)}
 function beep(){for(let i=0;i<6;i++)tone(i%2?620:880,i*.18,.16,"square",.05)}
@@ -529,14 +531,14 @@ function beep(){for(let i=0;i<6;i++)tone(i%2?620:880,i*.18,.16,"square",.05)}
 let tt;function toast(m){const t=$("#toast");t.textContent=m;t.classList.add("show");clearTimeout(tt);tt=setTimeout(()=>t.classList.remove("show"),2400)}
 function confetti(n=60){
   if(matchMedia("(prefers-reduced-motion:reduce)").matches)return;
-  const c=el("div","confetti");const bits=["🎉","✨","💖","🎀","⭐","🌸","💜","🐾"];
+  const c=el("div","confetti");const bits=["✨","💖","🎀","⭐","🌸","💜","🐾"];
   for(let i=0;i<n;i++){const s=el("span","",`left:${Math.random()*100}%;--dx:${(Math.random()-.5)*160}px;--rot:${Math.random()*720}deg;animation-duration:${2+Math.random()*2.2}s;animation-delay:${Math.random()*.5}s;font-size:${14+Math.random()*16}px`,bits[i%bits.length]);c.append(s)}
   document.body.append(c);setTimeout(()=>c.remove(),5200);
 }
 
 /* ---------- dialog ---------- */
 function openDlg({ic,kick,title,body,wide}){
-  $("#dlgIc").textContent=ic||"";$("#dlgKick").textContent=kick||"✧ a little thing just for you ✧";$("#dlgTitle").textContent=title;
+  $("#dlgIc").textContent=ic||"";$("#dlgKick").textContent=kick||"✧ just for you ✧";$("#dlgTitle").textContent=title;
   $("#dlgBody").innerHTML=body;$("#dlgCard").classList.toggle("wide",!!wide);
   $("#dlg").hidden=false;$("#dlgCard").scrollTop=0;$("#dlgClose").focus({preventScroll:true});
 }
@@ -544,7 +546,7 @@ function closeDlg(){$("#dlg").hidden=true;$("#dlgBody").innerHTML=""}
 function markFound(id){
   if(state.found[id])return;state.found[id]=1;save();
   const left=TOTAL-foundTotal();
-  if(left===0)setTimeout(()=>{toast("You found every single secret. Legend. ✨");confetti(90)},400);
+  if(left===0)setTimeout(()=>{toast("You found every secret. Nice work ✨");confetti(90)},400);
   refresh();
 }
 function linkBtn(it){
@@ -559,12 +561,12 @@ function openItem(id){
   openDlg({ic:it.ic,title:it.name,kick:it.sub?`✧ ${it.sub} ✧`:undefined,body,wide:k==="members"});
   const act=$("#actBox"),msg=$("#msgBox");
   const add=(html)=>act.insertAdjacentHTML("beforeend",html);
-  if(k==="play"){playBirthday();add(`<button class="big soft" id="again">▶ play it again</button>`);$("#again").onclick=playBirthday}
+  if(k==="play"){playTune();add(`<button class="big soft" id="again">▶ play it again</button>`);$("#again").onclick=playTune}
   if(k==="gift"){confetti(50)}
   if(k==="cake"){
     msg.innerHTML=`The candles are lit and flickering. Make a wish, then blow them out. 🕯️🕯️🕯️`;
     add(`<button class="big" id="blow">Blow out the candles 🌬️</button>`);
-    $("#blow").onclick=()=>{confetti(110);playBirthday();msg.innerHTML=it.text+"<br><br><i>Wish received. Processing time: the entire year. Terms and conditions: be a little bit brave.</i>";$("#blow").remove();toast("🎂 Happy birthday!!")};
+    $("#blow").onclick=()=>{confetti(110);playTune();msg.innerHTML=it.text+"<br><br><i>Wish received. It'll take a while to come true, so be patient, and a little brave.</i>";$("#blow").remove();toast("🎂 Wish sent")};
   }
   if(k==="wish"){
     add(`<button class="big" id="wish">Make a wish ✨</button>`);
@@ -575,7 +577,7 @@ function openItem(id){
     $("#pet").onclick=()=>{n++;tone(110+Math.random()*30,0,.5,"sawtooth",.03);$("#purr").textContent=n<5?"purr…":n<10?"purrrrr 💕":"MAXIMUM PURR ACHIEVED 😻";if(n===10){confetti(24);toast("Maximum purr achieved 😻")}}
   }
   if(k==="yarn"){
-    const lines=["The yarn rolled under the sofa. Both cats are now involved.","A cat appeared from nowhere. The yarn is gone. No witnesses.","You rolled it. The cats stared. Nobody moved. Respect.","Chaos achieved. The yarn has become a scarf somehow."];
+    const lines=["The yarn rolled under the sofa and both cats went after it.","A cat appeared out of nowhere and the yarn vanished. No witnesses.","You rolled it. The cats stared. Nobody moved.","Somehow the yarn is now a scarf."];
     add(`<button class="big" id="roll">Roll it 🧶</button>`);
     $("#roll").onclick=()=>{msg.textContent=lines[Math.floor(Math.random()*lines.length)];chime()}
   }
@@ -585,12 +587,12 @@ function openItem(id){
   }
   if(k==="complaint"){
     act.outerHTML=`<form class="act" id="cform"><input class="inp" id="cin" maxlength="120" placeholder="Type your complaint here…" autocomplete="off"><button class="big" type="submit">File it 📮</button></form><div id="cres"></div>`;
-    $("#cform").onsubmit=e=>{e.preventDefault();const v=$("#cin").value.trim()||"(a complaint so powerful it cannot be typed)";const s=document.createElement("div");s.textContent=v;
-      $("#cres").innerHTML=`<p class="msg" style="margin-top:14px">Your complaint: “<i>${s.innerHTML}</i>” has been received and forwarded to the Department of Absolutely Nobody.</p><div class="stamp">DENIED</div><p class="msg" style="font-size:14px">Expected resolution: when the universe gets its act together. Reference number: ${Math.floor(Math.random()*9e5+1e5)}-LOL.</p>`;chime()};
+    $("#cform").onsubmit=e=>{e.preventDefault();const v=$("#cin").value.trim()||"(a complaint too big to type)";const s=document.createElement("div");s.textContent=v;
+      $("#cres").innerHTML=`<p class="msg" style="margin-top:14px">Your complaint: “<i>${s.innerHTML}</i>” has been received and sent to the Department of Absolutely Nobody.</p><div class="stamp">DENIED</div><p class="msg" style="font-size:14px">Expected resolution: whenever the universe sorts itself out. Reference number: ${Math.floor(Math.random()*9e5+1e5)}-LOL.</p>`;chime()};
     setTimeout(()=>$("#cin")&&$("#cin").focus(),50);
   }
   if(k==="letter"){
-    if(visitedN()<5){msg.innerHTML=`Your birthday letter is almost ready. Step into ${5-visitedN()} more little place${5-visitedN()===1?"":"s"} and the envelope will open. ✉`}
+    if(visitedN()<5){msg.innerHTML=`Your letter is almost ready. Visit ${5-visitedN()} more room${5-visitedN()===1?"":"s"} and the envelope will open. ✉`}
     else{closeDlg();openLetter();return}
   }
   if(k==="members"){
@@ -600,20 +602,19 @@ function openItem(id){
     document.querySelectorAll(".mem").forEach(b=>b.onclick=()=>{
       document.querySelectorAll(".mem").forEach(x=>x.classList.remove("sel"));b.classList.add("sel");
       const m=MEMBERS[b.dataset.m];chime();
-      $("#mmsg").innerHTML=`<b>${m[0]}.</b> ${m[3]}${m[0].toLowerCase()===bias?"<br><br>★ <i>Her bias. Obviously the correct choice. The council agrees.</i>":""}`;
+      $("#mmsg").innerHTML=`<b>${m[0]}.</b> ${m[3]}${m[0].toLowerCase()===bias?"<br><br>★ <i>Her bias. Great choice.</i>":""}`;
     });
   }
 }
 function openLetter(){
-  openDlg({ic:"✉️",kick:"UNLOCKED: A NOTE FROM YOUR INTERNET FRIEND",title:"A little birthday letter",wide:true,body:`<div class="letter">
-    <p>Happy birthday, you lovely little menace. ♡</p>
-    <p>I hope this next trip around the sun brings you the kind of happiness that sneaks up on you: a song that hits just right, a cat choosing you as its favourite human, a laugh that makes your stomach hurt, and days that feel a little lighter.</p>
-    <p>May your playlists be immaculate, your enemies be confused, your snacks be plentiful, and your problems develop the good sense to leave you alone.</p>
-    <p>Thank you for being you. I hope you always have room to be completely, unapologetically yourself.</p>
-    <p>And whenever the world gets too loud, remember: you have a tiny home on the internet. The cats are on duty. The vibes are questionable. The door is always open.</p>
-    <p class="sign">With lots of birthday affection,<br>${CONFIG.signOff} ✿</p></div>
-    <p class="ps">P.S. This house is yours. Come back whenever you like.</p>`});
-  confetti(80);playBirthday();
+  openDlg({ic:"✉️",kick:"A NOTE FOR YOU",title:"A little note",wide:true,body:`<div class="letter">
+    <p>Hey you. ♡</p>
+    <p>I made this place so you'd have somewhere to relax whenever you want. No schedule, nothing to finish. Come in when you need a breather.</p>
+    <p>Pet the cats, take a nap, make a wish, put some music on. Or just sit for a while and do nothing. That's allowed here.</p>
+    <p>I hope you know how glad I am that you're in my life. Whatever kind of day you're having, the door's always open.</p>
+    <p class="sign">Always here for you,<br>${CONFIG.signOff} ✿</p></div>
+    <p class="ps">P.S. This place is yours. Come back anytime.</p>`});
+  confetti(60);playTune();
 }
 
 /* ---------- events ---------- */
@@ -638,13 +639,15 @@ document.addEventListener("pointerover",e=>{
   if(it&&current){const o=ROOMS[current].items.find(i=>i.id===it.dataset.item);if(o)$("#caption").textContent=`${o.ic} ${o.name} — ${o.sub}`}
 });
 $("#back").onclick=showHub;
-$("#resetView").onclick=()=>{tilt.rx=60;tilt.rz=-45;applyTilt()};
+$("#resetView").onclick=()=>{tilt.rx=60;tilt.rz=-45;zoom=1;applyTilt();fit()};
+$("#zoomIn").onclick=()=>{zoom=clamp(zoom+.2,.8,1.8);fit()};
+$("#zoomOut").onclick=()=>{zoom=clamp(zoom-.2,.8,1.8);fit()};
 $("#dlgClose").onclick=closeDlg;
 $("#dlg").addEventListener("click",e=>{if(e.target.id==="dlg")closeDlg()});
 document.addEventListener("keydown",e=>{if(e.key==="Escape"&&!$("#dlg").hidden)closeDlg()});
 $("#letter-btn").onclick=openLetter;
 $("#mute").onclick=()=>{state.muted=!state.muted;save();$("#mute").textContent=state.muted?"🔇 sound off":"🔊 sound on"};
-$("#reset").onclick=()=>{if(confirm("Forget all found secrets and start the adventure again?")){state={found:{},visited:{},muted:state.muted};save();showHub()}};
+$("#reset").onclick=()=>{if(confirm("Forget all found secrets and start over?")){state={found:{},visited:{},muted:state.muted};save();showHub()}};
 window.addEventListener("resize",fit);
 
 /* ---------- go ---------- */
